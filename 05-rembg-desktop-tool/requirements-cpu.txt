@@ -1,6 +1,0 @@
-rembg[cpu]
-Pillow
-numpy
-opencv-python
-scipy
-tqdm
