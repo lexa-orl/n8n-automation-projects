@@ -1,0 +1,565 @@
+﻿{
+    "updatedAt":  "2026-06-11T09:29:32.470Z",
+    "createdAt":  "2026-06-10T14:34:52.455Z",
+    "id":  "0cmVDitqtn4rRPHX",
+    "name":  "Smart GitHub Finder (Native AI Nodes) - Portfolio Demo",
+    "description":  null,
+    "active":  false,
+    "isArchived":  false,
+    "nodes":  [
+                  {
+                      "parameters":  {
+                                         "url":  "=https://api.github.com/search/repositories",
+                                         "sendQuery":  true,
+                                         "queryParameters":  {
+                                                                 "parameters":  [
+                                                                                    {
+                                                                                        "name":  "q",
+                                                                                        "value":  "={{ $json.text }}"
+                                                                                    },
+                                                                                    {
+                                                                                        "name":  "sort",
+                                                                                        "value":  "stars"
+                                                                                    },
+                                                                                    {
+                                                                                        "name":  "per_page",
+                                                                                        "value":  "3"
+                                                                                    }
+                                                                                ]
+                                                             },
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "id":  "f17a4eef-f79d-45a6-9c68-bd8a7fc433af",
+                      "name":  "GitHub Search2",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4,
+                      "position":  [
+                                       1024,
+                                       1648
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "fieldToSplitOut":  "items",
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "id":  "2eb46049-00e0-48e6-8a3c-7c4774d1caa9",
+                      "name":  "Split Repos2",
+                      "type":  "n8n-nodes-base.itemLists",
+                      "typeVersion":  2,
+                      "position":  [
+                                       1216,
+                                       1648
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "model":  "google/gemini-2.5-flash",
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "type":  "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+                      "typeVersion":  1,
+                      "position":  [
+                                       1392,
+                                       1824
+                                   ],
+                      "id":  "564bdaab-e8a5-45ce-be35-21e8f6301557",
+                      "name":  "OpenRouter Chat Model2"
+                  },
+                  {
+                      "parameters":  {
+                                         "model":  "minimax/minimax-m3",
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "type":  "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+                      "typeVersion":  1,
+                      "position":  [
+                                       688,
+                                       1824
+                                   ],
+                      "id":  "3b4cf21b-7ad2-400b-8a06-f913010557cf",
+                      "name":  "OpenRouter Chat Model3"
+                  },
+                  {
+                      "parameters":  {
+                                         "promptType":  "define",
+                                         "text":  "={{ $json.chatInput }}",
+                                         "messages":  {
+                                                          "messageValues":  [
+                                                                                {
+                                                                                    "type":  "AIMessagePromptTemplate",
+                                                                                    "message":  "You are a GitHub search query optimizer. Take the user\u0027s request and turn it into a simple, precise GitHub search query (keywords only, strictly NO quotes, NO markdown, NO explanation, just 2-3 words). Output ONLY the plain text query."
+                                                                                }
+                                                                            ]
+                                                      }
+                                     },
+                      "type":  "@n8n/n8n-nodes-langchain.chainLlm",
+                      "typeVersion":  1.5,
+                      "position":  [
+                                       688,
+                                       1648
+                                   ],
+                      "id":  "b2df5902-9b3c-4780-8682-67a57e509fd8",
+                      "name":  "Basic LLM Chain",
+                      "alwaysOutputData":  true,
+                      "retryOnFail":  true
+                  },
+                  {
+                      "parameters":  {
+                                         "promptType":  "define",
+                                         "text":  "={{ $json.owner }}",
+                                         "messages":  {
+                                                          "messageValues":  [
+                                                                                {
+                                                                                    "type":  "AIMessagePromptTemplate",
+                                                                                    "message":  "Ты — эксперт по автоматизации. Прочитай данные репозитория GitHub (название, описание, ссылка) и сделай краткое описание на русском языке для Telegram поста.  Напиши сочно, с эмодзи (3-4 sentences): что делает этот софт, кому он полезен и почему его стоит покрутить. В самом конце поста обязательно укажи прямую ссылку на репозиторий."
+                                                                                }
+                                                                            ]
+                                                      }
+                                     },
+                      "type":  "@n8n/n8n-nodes-langchain.chainLlm",
+                      "typeVersion":  1.5,
+                      "position":  [
+                                       1392,
+                                       1648
+                                   ],
+                      "id":  "96536056-9af6-4f1f-b454-830c4b82e52f",
+                      "name":  "Basic LLM Chain1",
+                      "alwaysOutputData":  true,
+                      "retryOnFail":  true
+                  },
+                  {
+                      "parameters":  {
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "type":  "@n8n/n8n-nodes-langchain.chatTrigger",
+                      "typeVersion":  1.4,
+                      "position":  [
+                                       -144,
+                                       2144
+                                   ],
+                      "id":  "753af3f5-a525-42af-aecc-3bfa6e895777",
+                      "name":  "When chat message received"
+                  },
+                  {
+                      "parameters":  {
+                                         "messages":  {
+                                                          "messageValues":  [
+                                                                                {
+                                                                                    "message":  "You are a GitHub search optimizer. Convert user request into JSON with 10 search queries.\n\nUser: {{$json.chatInput}}\n\nReturn ONLY JSON:\n{\"queries\":[\"...\"]}"
+                                                                                }
+                                                                            ]
+                                                      }
+                                     },
+                      "id":  "5fb2265c-cf41-4b6e-b5a6-dd10dc0a54fe",
+                      "name":  "Generate Queries",
+                      "type":  "@n8n/n8n-nodes-langchain.chainLlm",
+                      "typeVersion":  1.5,
+                      "position":  [
+                                       80,
+                                       2144
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "const data = JSON.parse($json.text);\nreturn data.queries.map(q =\u003e ({ query: q }));"
+                                     },
+                      "id":  "3359f08b-a2ee-48cf-8782-365ba1762f45",
+                      "name":  "Parse Queries",
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  2,
+                      "position":  [
+                                       432,
+                                       2144
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "url":  "https://api.github.com/search/repositories",
+                                         "sendQuery":  true,
+                                         "queryParameters":  {
+                                                                 "parameters":  [
+                                                                                    {
+                                                                                        "name":  "q",
+                                                                                        "value":  "={{$json.query}}"
+                                                                                    },
+                                                                                    {
+                                                                                        "name":  "per_page",
+                                                                                        "value":  "10"
+                                                                                    },
+                                                                                    {
+                                                                                        "name":  "sort",
+                                                                                        "value":  "stars"
+                                                                                    }
+                                                                                ]
+                                                             },
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "id":  "bf288a14-63de-4488-bea3-3022d9e1ac88",
+                      "name":  "GitHub Search",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4,
+                      "position":  [
+                                       672,
+                                       2144
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "fieldToSplitOut":  "items",
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "id":  "f6a02e2f-dd92-4d66-a84f-db99da9aeec5",
+                      "name":  "Split Items",
+                      "type":  "n8n-nodes-base.itemLists",
+                      "typeVersion":  2,
+                      "position":  [
+                                       896,
+                                       2144
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "const seen = new Set();\nreturn items.filter(i =\u003e {\n  const url = i.json.html_url;\n  if (seen.has(url)) return false;\n  seen.add(url);\n  return true;\n});"
+                                     },
+                      "id":  "4abb3d91-3492-4a49-b1fc-79ae1887afad",
+                      "name":  "Dedupe",
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  2,
+                      "position":  [
+                                       1088,
+                                       2144
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "messages":  {
+                                                          "messageValues":  [
+                                                                                {
+                                                                                    "message":  "User request: {{$(\u0027When chat message received\u0027).item.json.chatInput}}\n\nRepo:\nName: {{$json.name}}\nDescription: {{$json.description}}\nStars: {{$json.stargazers_count}}\nURL: {{$json.html_url}}\n\nScore relevance 0-100 for n8n automation workflows. Return JSON: {\"score\":0,\"reason\":\"\"}"
+                                                                                }
+                                                                            ]
+                                                      }
+                                     },
+                      "id":  "c2436c6b-022e-4f85-a4fb-c2a7f79bf470",
+                      "name":  "Rank Repo",
+                      "type":  "@n8n/n8n-nodes-langchain.chainLlm",
+                      "typeVersion":  1.5,
+                      "position":  [
+                                       1296,
+                                       2144
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "const r = JSON.parse($json.text);\nreturn [{\n  name: $json.name,\n  url: $json.html_url,\n  description: $json.description,\n  stars: $json.stargazers_count,\n  score: r.score,\n  reason: r.reason\n}];"
+                                     },
+                      "id":  "9d11dd76-f552-480a-a287-ddfa40996e11",
+                      "name":  "Parse Score",
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  2,
+                      "position":  [
+                                       1616,
+                                       2144
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "items.sort((a,b)=\u003eb.json.score - a.json.score);\nreturn items.slice(0,10);"
+                                     },
+                      "id":  "9377260b-d217-4976-99f7-36d4d1816293",
+                      "name":  "Top 10",
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  2,
+                      "position":  [
+                                       1824,
+                                       2144
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "let out = \u0027🔥 TOP n8n GitHub workflows\\n\\n\u0027;\nitems.forEach((i, idx) =\u003e {\n  out += `${idx+1}. ${i.json.name}\\n`;\n  out += `⭐ ${i.json.stars}\\n`;\n  out += `${i.json.description || \u0027\u0027}\\n`;\n  out += `${i.json.url}\\n\\n`;\n});\nreturn [{ text: out }];"
+                                     },
+                      "id":  "13c2e2d0-4d84-4cf4-a40c-3a13a21bada1",
+                      "name":  "Format Output",
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  2,
+                      "position":  [
+                                       2016,
+                                       2144
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "model":  "minimax/minimax-m3",
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "type":  "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+                      "typeVersion":  1,
+                      "position":  [
+                                       160,
+                                       2448
+                                   ],
+                      "id":  "3d7eb1a6-db8b-462c-83dc-c4e238cfb42c",
+                      "name":  "OpenRouter Chat Model"
+                  },
+                  {
+                      "parameters":  {
+                                         "model":  "minimax/minimax-m3",
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "type":  "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+                      "typeVersion":  1,
+                      "position":  [
+                                       1328,
+                                       2352
+                                   ],
+                      "id":  "b9242ea5-e7da-456e-82a3-838fda24fe01",
+                      "name":  "OpenRouter Chat Model4"
+                  }
+              ],
+    "connections":  {
+                        "GitHub Search2":  {
+                                               "main":  [
+                                                            [
+                                                                {
+                                                                    "node":  "Split Repos2",
+                                                                    "type":  "main",
+                                                                    "index":  0
+                                                                }
+                                                            ]
+                                                        ]
+                                           },
+                        "Split Repos2":  {
+                                             "main":  [
+                                                          [
+                                                              {
+                                                                  "node":  "Basic LLM Chain1",
+                                                                  "type":  "main",
+                                                                  "index":  0
+                                                              }
+                                                          ]
+                                                      ]
+                                         },
+                        "OpenRouter Chat Model2":  {
+                                                       "ai_languageModel":  [
+                                                                                [
+                                                                                    {
+                                                                                        "node":  "Basic LLM Chain1",
+                                                                                        "type":  "ai_languageModel",
+                                                                                        "index":  0
+                                                                                    }
+                                                                                ]
+                                                                            ]
+                                                   },
+                        "OpenRouter Chat Model3":  {
+                                                       "ai_languageModel":  [
+                                                                                [
+                                                                                    {
+                                                                                        "node":  "Basic LLM Chain",
+                                                                                        "type":  "ai_languageModel",
+                                                                                        "index":  0
+                                                                                    }
+                                                                                ]
+                                                                            ]
+                                                   },
+                        "Basic LLM Chain":  {
+                                                "main":  [
+                                                             [
+                                                                 {
+                                                                     "node":  "GitHub Search2",
+                                                                     "type":  "main",
+                                                                     "index":  0
+                                                                 }
+                                                             ]
+                                                         ]
+                                            },
+                        "Basic LLM Chain1":  {
+                                                 "main":  [
+                                                              [
+
+                                                              ]
+                                                          ]
+                                             },
+                        "When chat message received":  {
+                                                           "main":  [
+                                                                        [
+                                                                            {
+                                                                                "node":  "Generate Queries",
+                                                                                "type":  "main",
+                                                                                "index":  0
+                                                                            }
+                                                                        ]
+                                                                    ]
+                                                       },
+                        "Generate Queries":  {
+                                                 "main":  [
+                                                              [
+                                                                  {
+                                                                      "node":  "Parse Queries",
+                                                                      "type":  "main",
+                                                                      "index":  0
+                                                                  }
+                                                              ]
+                                                          ]
+                                             },
+                        "Parse Queries":  {
+                                              "main":  [
+                                                           [
+                                                               {
+                                                                   "node":  "GitHub Search",
+                                                                   "type":  "main",
+                                                                   "index":  0
+                                                               }
+                                                           ]
+                                                       ]
+                                          },
+                        "GitHub Search":  {
+                                              "main":  [
+                                                           [
+                                                               {
+                                                                   "node":  "Split Items",
+                                                                   "type":  "main",
+                                                                   "index":  0
+                                                               }
+                                                           ]
+                                                       ]
+                                          },
+                        "Split Items":  {
+                                            "main":  [
+                                                         [
+                                                             {
+                                                                 "node":  "Dedupe",
+                                                                 "type":  "main",
+                                                                 "index":  0
+                                                             }
+                                                         ]
+                                                     ]
+                                        },
+                        "Dedupe":  {
+                                       "main":  [
+                                                    [
+                                                        {
+                                                            "node":  "Rank Repo",
+                                                            "type":  "main",
+                                                            "index":  0
+                                                        }
+                                                    ]
+                                                ]
+                                   },
+                        "Rank Repo":  {
+                                          "main":  [
+                                                       [
+                                                           {
+                                                               "node":  "Parse Score",
+                                                               "type":  "main",
+                                                               "index":  0
+                                                           }
+                                                       ]
+                                                   ]
+                                      },
+                        "Parse Score":  {
+                                            "main":  [
+                                                         [
+                                                             {
+                                                                 "node":  "Top 10",
+                                                                 "type":  "main",
+                                                                 "index":  0
+                                                             }
+                                                         ]
+                                                     ]
+                                        },
+                        "Top 10":  {
+                                       "main":  [
+                                                    [
+                                                        {
+                                                            "node":  "Format Output",
+                                                            "type":  "main",
+                                                            "index":  0
+                                                        }
+                                                    ]
+                                                ]
+                                   },
+                        "OpenRouter Chat Model4":  {
+                                                       "ai_languageModel":  [
+                                                                                [
+                                                                                    {
+                                                                                        "node":  "Rank Repo",
+                                                                                        "type":  "ai_languageModel",
+                                                                                        "index":  0
+                                                                                    }
+                                                                                ]
+                                                                            ]
+                                                   },
+                        "OpenRouter Chat Model":  {
+                                                      "ai_languageModel":  [
+                                                                               [
+                                                                                   {
+                                                                                       "node":  "Generate Queries",
+                                                                                       "type":  "ai_languageModel",
+                                                                                       "index":  0
+                                                                                   }
+                                                                               ]
+                                                                           ]
+                                                  }
+                    },
+    "settings":  {
+                     "executionOrder":  "v1",
+                     "binaryMode":  "separate"
+                 },
+    "staticData":  null,
+    "meta":  {
+                 "templateCredsSetupCompleted":  true
+             },
+    "pinData":  {
+
+                },
+    "versionId":  "6521cd37-6689-4443-9a18-187a8b24bd7c",
+    "activeVersionId":  null,
+    "versionCounter":  118,
+    "triggerCount":  1,
+    "tags":  [
+
+             ],
+    "shared":  [
+                   {
+                       "updatedAt":  "2026-07-22T06:51:04.862Z",
+                       "createdAt":  "2026-07-22T06:51:04.862Z",
+                       "role":  "workflow:owner",
+                       "workflowId":  "0cmVDitqtn4rRPHX",
+                       "projectId":  "TAbhGdk0kvTh10TJ",
+                       "project":  {
+                                       "updatedAt":  "2026-07-21T16:51:14.212Z",
+                                       "createdAt":  "2026-07-21T16:45:02.267Z",
+                                       "id":  "TAbhGdk0kvTh10TJ",
+                                       "name":  "Alekseyorl779 Alekseyorl779 \u003calekseyorl779@gmail.com\u003e",
+                                       "type":  "personal",
+                                       "icon":  null,
+                                       "description":  null,
+                                       "creatorId":  "05c1e840-c40d-47b5-bfd2-a660e531eafd"
+                                   }
+                   }
+               ],
+    "versionMetadata":  {
+                            "name":  null,
+                            "description":  null
+                        }
+}

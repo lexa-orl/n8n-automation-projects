@@ -1,0 +1,1657 @@
+﻿{
+    "updatedAt":  "2026-06-10T07:13:03.951Z",
+    "createdAt":  "2026-06-04T11:39:40.499Z",
+    "id":  "D6z4NovzAGNxfQCM",
+    "name":  "vpnbot main - Portfolio Demo",
+    "description":  null,
+    "active":  false,
+    "isArchived":  false,
+    "nodes":  [
+                  {
+                      "parameters":  {
+                                         "updates":  [
+                                                         "message"
+                                                     ],
+                                         "additionalFields":  {
+
+                                                              }
+                                     },
+                      "type":  "n8n-nodes-base.telegramTrigger",
+                      "typeVersion":  1.1,
+                      "position":  [
+                                       -13488,
+                                       2272
+                                   ],
+                      "name":  "Telegram Trigger",
+                      "id":  "09a5eeb1-cc75-48af-8a8c-239fbef8465b"
+                  },
+                  {
+                      "parameters":  {
+                                         "operation":  "getAll",
+                                         "tableId":  "clients"
+                                     },
+                      "type":  "n8n-nodes-base.supabase",
+                      "typeVersion":  1,
+                      "position":  [
+                                       -12864,
+                                       2144
+                                   ],
+                      "name":  "GET Юзера",
+                      "alwaysOutputData":  true,
+                      "id":  "cfd8d14d-e367-4084-a20f-367ef8c34a9e"
+                  },
+                  {
+                      "parameters":  {
+                                         "tableId":  "clients",
+                                         "fieldsUi":  {
+                                                          "fieldValues":  [
+                                                                              {
+                                                                                  "fieldId":  "telegram_id",
+                                                                                  "fieldValue":  "={{ $(\u0027Telegram Trigger\u0027).item.json.message.from.id }}"
+                                                                              },
+                                                                              {
+                                                                                  "fieldId":  "first_name",
+                                                                                  "fieldValue":  "={{ $(\u0027Telegram Trigger\u0027).item.json.message.from.first_name }}"
+                                                                              },
+                                                                              {
+                                                                                  "fieldId":  "username",
+                                                                                  "fieldValue":  "={{ $(\u0027Telegram Trigger\u0027).item.json.message.from.username }}"
+                                                                              },
+                                                                              {
+                                                                                  "fieldId":  "balance",
+                                                                                  "fieldValue":  "100"
+                                                                              },
+                                                                              {
+                                                                                  "fieldId":  "language_code",
+                                                                                  "fieldValue":  "={{ $(\u0027Telegram Trigger\u0027).item.json.message.from.language_code }}"
+                                                                              }
+                                                                          ]
+                                                      }
+                                     },
+                      "type":  "n8n-nodes-base.supabase",
+                      "typeVersion":  1,
+                      "position":  [
+                                       -12592,
+                                       2336
+                                   ],
+                      "name":  "INSERT Новый",
+                      "id":  "2f22bcf9-8951-4294-9727-50d4f0fcae4d"
+                  },
+                  {
+                      "parameters":  {
+                                         "chatId":  "YOUR_CHATID_PLACEHOLDER",
+                                         "text":  "🎉 Добро пожаловать! Ты успешно зарегистрирован в системе. На твой баланс начислено 100 токенов.",
+                                         "additionalFields":  {
+                                                                  "appendAttribution":  false
+                                                              }
+                                     },
+                      "type":  "n8n-nodes-base.telegram",
+                      "typeVersion":  1.2,
+                      "position":  [
+                                       -12464,
+                                       2336
+                                   ],
+                      "name":  "Приветствие",
+                      "id":  "102b0469-e276-4fb6-8b5d-4424f1d4ba4b"
+                  },
+                  {
+                      "parameters":  {
+                                         "conditions":  {
+                                                            "options":  {
+                                                                            "caseSensitive":  true,
+                                                                            "leftValue":  "",
+                                                                            "typeValidation":  "strict",
+                                                                            "version":  3
+                                                                        },
+                                                            "conditions":  [
+                                                                               {
+                                                                                   "id":  "86f5a94e-8afa-4f21-9f48-7ade68a77a55",
+                                                                                   "leftValue":  "={{ $json.message.from.is_bot }}",
+                                                                                   "rightValue":  false,
+                                                                                   "operator":  {
+                                                                                                    "type":  "boolean",
+                                                                                                    "operation":  "equals"
+                                                                                                }
+                                                                               }
+                                                                           ],
+                                                            "combinator":  "and"
+                                                        },
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "type":  "n8n-nodes-base.if",
+                      "typeVersion":  2.3,
+                      "position":  [
+                                       -13088,
+                                       2256
+                                   ],
+                      "id":  "7246a14e-bf9a-4eb8-86a1-7a41ca964d4d",
+                      "name":  "проверка на бота"
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "// 1. Получаем ID пользователя, который написал боту (из триггера)\nconst currentUserId = $(\u0027Telegram Trigger\u0027).item.json.message.from.id;\n\n// 2. Собираем массив всех telegram_id из входящего JSON (из базы данных)\nconst dbIds = $input.all().map(item =\u003e item.json.telegram_id);\n\n// 3. Проверяем, есть ли текущий ID в массиве базы данных\nconst exists = dbIds.includes(currentUserId);\n\n// 4. Отдаем удобный результат для ноды IF\nreturn [{\n  json: {\n    exists_in_db: exists,\n    trigger_id: currentUserId,\n    db_ids: dbIds\n  }\n}];"
+                                     },
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  2,
+                      "position":  [
+                                       -12688,
+                                       2144
+                                   ],
+                      "name":  "Code (Сбор и проверка ID)",
+                      "id":  "d4f4c5c2-ed0c-463d-9379-c1c765513969"
+                  },
+                  {
+                      "parameters":  {
+                                         "conditions":  {
+                                                            "boolean":  [
+                                                                            {
+                                                                                "value1":  "={{ $json.exists_in_db }}",
+                                                                                "value2":  true
+                                                                            }
+                                                                        ]
+                                                        }
+                                     },
+                      "type":  "n8n-nodes-base.if",
+                      "typeVersion":  1,
+                      "position":  [
+                                       -12496,
+                                       2144
+                                   ],
+                      "name":  "Есть в базе?1",
+                      "id":  "af5b48aa-06a1-4ada-9764-9e6805010c77"
+                  },
+                  {
+                      "parameters":  {
+                                         "content":  "## Валидация пользователя\n",
+                                         "height":  416,
+                                         "width":  1072,
+                                         "color":  4
+                                     },
+                      "type":  "n8n-nodes-base.stickyNote",
+                      "position":  [
+                                       -13328,
+                                       2096
+                                   ],
+                      "typeVersion":  1,
+                      "id":  "34629550-7fe3-415b-8b22-320883d44948",
+                      "name":  "Sticky Note"
+                  },
+                  {
+                      "parameters":  {
+                                         "rules":  {
+                                                       "values":  [
+                                                                      {
+                                                                          "conditions":  {
+                                                                                             "options":  {
+                                                                                                             "caseSensitive":  true,
+                                                                                                             "leftValue":  "",
+                                                                                                             "typeValidation":  "strict",
+                                                                                                             "version":  1
+                                                                                                         },
+                                                                                             "conditions":  [
+                                                                                                                {
+                                                                                                                    "leftValue":  "={{ $(\u0027Telegram Trigger\u0027).item.json.message.text }}",
+                                                                                                                    "rightValue":  "/start",
+                                                                                                                    "operator":  {
+                                                                                                                                     "type":  "string",
+                                                                                                                                     "operation":  "equals"
+                                                                                                                                 },
+                                                                                                                    "id":  "0ea03061-3cad-4c69-8c37-52645a873f2e"
+                                                                                                                },
+                                                                                                                {
+                                                                                                                    "leftValue":  "={{ $(\u0027Telegram Trigger\u0027).item.json.message.text }}",
+                                                                                                                    "rightValue":  "🔙 Назад",
+                                                                                                                    "operator":  {
+                                                                                                                                     "type":  "string",
+                                                                                                                                     "operation":  "equals"
+                                                                                                                                 },
+                                                                                                                    "id":  "297cef29-1bbd-43f9-9d83-bf4b601725bc"
+                                                                                                                },
+                                                                                                                {
+                                                                                                                    "leftValue":  "={{ $(\u0027Telegram Trigger\u0027).item.json.message.text }}",
+                                                                                                                    "rightValue":  "назад",
+                                                                                                                    "operator":  {
+                                                                                                                                     "type":  "string",
+                                                                                                                                     "operation":  "equals"
+                                                                                                                                 },
+                                                                                                                    "id":  "0baeb15a-834c-4c63-ad04-661c6a495960"
+                                                                                                                }
+                                                                                                            ],
+                                                                                             "combinator":  "or"
+                                                                                         },
+                                                                          "renameOutput":  true,
+                                                                          "outputKey":  "Главное меню"
+                                                                      },
+                                                                      {
+                                                                          "conditions":  {
+                                                                                             "options":  {
+                                                                                                             "caseSensitive":  true,
+                                                                                                             "leftValue":  "",
+                                                                                                             "typeValidation":  "strict",
+                                                                                                             "version":  1
+                                                                                                         },
+                                                                                             "conditions":  [
+                                                                                                                {
+                                                                                                                    "leftValue":  "={{ $(\u0027Telegram Trigger\u0027).item.json.message.text }}",
+                                                                                                                    "rightValue":  "👤 Профиль",
+                                                                                                                    "operator":  {
+                                                                                                                                     "type":  "string",
+                                                                                                                                     "operation":  "equals"
+                                                                                                                                 },
+                                                                                                                    "id":  "c258b2b5-fbf9-47a3-84c9-c34d067e72e0"
+                                                                                                                }
+                                                                                                            ],
+                                                                                             "combinator":  "and"
+                                                                                         },
+                                                                          "renameOutput":  true,
+                                                                          "outputKey":  "Профиль"
+                                                                      },
+                                                                      {
+                                                                          "conditions":  {
+                                                                                             "options":  {
+                                                                                                             "caseSensitive":  true,
+                                                                                                             "leftValue":  "",
+                                                                                                             "typeValidation":  "strict",
+                                                                                                             "version":  1
+                                                                                                         },
+                                                                                             "conditions":  [
+                                                                                                                {
+                                                                                                                    "leftValue":  "={{ $(\u0027Telegram Trigger\u0027).item.json.message.text }}",
+                                                                                                                    "rightValue":  "📢 В канал",
+                                                                                                                    "operator":  {
+                                                                                                                                     "type":  "string",
+                                                                                                                                     "operation":  "equals"
+                                                                                                                                 },
+                                                                                                                    "id":  "9bef3a5f-a4a6-4b5c-906c-e80c92749305"
+                                                                                                                }
+                                                                                                            ],
+                                                                                             "combinator":  "and"
+                                                                                         },
+                                                                          "renameOutput":  true,
+                                                                          "outputKey":  "В канал"
+                                                                      },
+                                                                      {
+                                                                          "conditions":  {
+                                                                                             "options":  {
+                                                                                                             "caseSensitive":  true,
+                                                                                                             "leftValue":  "",
+                                                                                                             "typeValidation":  "strict",
+                                                                                                             "version":  1
+                                                                                                         },
+                                                                                             "conditions":  [
+                                                                                                                {
+                                                                                                                    "leftValue":  "={{ $(\u0027Telegram Trigger\u0027).item.json.message.text }}",
+                                                                                                                    "rightValue":  "💳 Оплата",
+                                                                                                                    "operator":  {
+                                                                                                                                     "type":  "string",
+                                                                                                                                     "operation":  "equals"
+                                                                                                                                 },
+                                                                                                                    "id":  "076c0b01-d70d-4c42-a1e6-59f2ebcab20c"
+                                                                                                                }
+                                                                                                            ],
+                                                                                             "combinator":  "and"
+                                                                                         },
+                                                                          "renameOutput":  true,
+                                                                          "outputKey":  "Оплата"
+                                                                      },
+                                                                      {
+                                                                          "conditions":  {
+                                                                                             "options":  {
+                                                                                                             "caseSensitive":  true,
+                                                                                                             "leftValue":  "",
+                                                                                                             "typeValidation":  "strict",
+                                                                                                             "version":  1
+                                                                                                         },
+                                                                                             "conditions":  [
+                                                                                                                {
+                                                                                                                    "leftValue":  "={{ $(\u0027Telegram Trigger\u0027).item.json.message.text }}",
+                                                                                                                    "rightValue":  "⚙️ Установка",
+                                                                                                                    "operator":  {
+                                                                                                                                     "type":  "string",
+                                                                                                                                     "operation":  "equals"
+                                                                                                                                 },
+                                                                                                                    "id":  "7f894467-e4a2-47de-a8be-afeba65c2300"
+                                                                                                                }
+                                                                                                            ],
+                                                                                             "combinator":  "and"
+                                                                                         },
+                                                                          "renameOutput":  true,
+                                                                          "outputKey":  "Установка"
+                                                                      },
+                                                                      {
+                                                                          "conditions":  {
+                                                                                             "options":  {
+                                                                                                             "caseSensitive":  true,
+                                                                                                             "leftValue":  "",
+                                                                                                             "typeValidation":  "strict",
+                                                                                                             "version":  1
+                                                                                                         },
+                                                                                             "conditions":  [
+                                                                                                                {
+                                                                                                                    "leftValue":  "={{ $(\u0027Telegram Trigger\u0027).item.json.message.text }}",
+                                                                                                                    "rightValue":  "телефон",
+                                                                                                                    "operator":  {
+                                                                                                                                     "type":  "string",
+                                                                                                                                     "operation":  "equals"
+                                                                                                                                 },
+                                                                                                                    "id":  "a7ed3e3e-7066-4d10-912e-f2580228b875"
+                                                                                                                }
+                                                                                                            ],
+                                                                                             "combinator":  "and"
+                                                                                         },
+                                                                          "renameOutput":  true,
+                                                                          "outputKey":  "Телефон Инфо"
+                                                                      },
+                                                                      {
+                                                                          "conditions":  {
+                                                                                             "options":  {
+                                                                                                             "caseSensitive":  true,
+                                                                                                             "leftValue":  "",
+                                                                                                             "typeValidation":  "strict",
+                                                                                                             "version":  1
+                                                                                                         },
+                                                                                             "conditions":  [
+                                                                                                                {
+                                                                                                                    "leftValue":  "={{ $(\u0027Telegram Trigger\u0027).item.json.message.text }}",
+                                                                                                                    "rightValue":  "Компьютер",
+                                                                                                                    "operator":  {
+                                                                                                                                     "type":  "string",
+                                                                                                                                     "operation":  "equals"
+                                                                                                                                 },
+                                                                                                                    "id":  "62a5289f-2bf8-4c1b-b349-7c1393aeac52"
+                                                                                                                }
+                                                                                                            ],
+                                                                                             "combinator":  "and"
+                                                                                         },
+                                                                          "renameOutput":  true,
+                                                                          "outputKey":  "Компьютер Инфо"
+                                                                      },
+                                                                      {
+                                                                          "conditions":  {
+                                                                                             "options":  {
+                                                                                                             "caseSensitive":  true,
+                                                                                                             "leftValue":  "",
+                                                                                                             "typeValidation":  "strict",
+                                                                                                             "version":  1
+                                                                                                         },
+                                                                                             "conditions":  [
+                                                                                                                {
+                                                                                                                    "leftValue":  "={{ $(\u0027Telegram Trigger\u0027).item.json.message.text }}",
+                                                                                                                    "rightValue":  "Телевизор",
+                                                                                                                    "operator":  {
+                                                                                                                                     "type":  "string",
+                                                                                                                                     "operation":  "equals"
+                                                                                                                                 },
+                                                                                                                    "id":  "4cf41668-ec14-4018-8e71-b83c2098b6dc"
+                                                                                                                }
+                                                                                                            ],
+                                                                                             "combinator":  "and"
+                                                                                         },
+                                                                          "renameOutput":  true,
+                                                                          "outputKey":  "Телевизор Инфо"
+                                                                      },
+                                                                      {
+                                                                          "conditions":  {
+                                                                                             "options":  {
+                                                                                                             "caseSensitive":  true,
+                                                                                                             "leftValue":  "",
+                                                                                                             "typeValidation":  "strict",
+                                                                                                             "version":  1
+                                                                                                         },
+                                                                                             "conditions":  [
+                                                                                                                {
+                                                                                                                    "id":  "e34c4a6e-7d08-4b8d-949b-ee2540af7bd4",
+                                                                                                                    "leftValue":  "={{ $(\u0027Telegram Trigger\u0027).item.json.message.text }}",
+                                                                                                                    "rightValue":  "🔑 Ключ",
+                                                                                                                    "operator":  {
+                                                                                                                                     "type":  "string",
+                                                                                                                                     "operation":  "equals",
+                                                                                                                                     "name":  "filter.operator.equals"
+                                                                                                                                 }
+                                                                                                                }
+                                                                                                            ],
+                                                                                             "combinator":  "and"
+                                                                                         },
+                                                                          "renameOutput":  true,
+                                                                          "outputKey":  "🔑 Ключ"
+                                                                      },
+                                                                      {
+                                                                          "conditions":  {
+                                                                                             "options":  {
+                                                                                                             "caseSensitive":  true,
+                                                                                                             "leftValue":  "",
+                                                                                                             "typeValidation":  "strict",
+                                                                                                             "version":  1
+                                                                                                         },
+                                                                                             "conditions":  [
+                                                                                                                {
+                                                                                                                    "id":  "494cbcfa-8279-4da2-83e4-4ff1d76a1e4d",
+                                                                                                                    "leftValue":  "={{ $(\u0027Telegram Trigger\u0027).item.json.message.text }}",
+                                                                                                                    "rightValue":  "✉️ Почта",
+                                                                                                                    "operator":  {
+                                                                                                                                     "type":  "string",
+                                                                                                                                     "operation":  "equals",
+                                                                                                                                     "name":  "filter.operator.equals"
+                                                                                                                                 }
+                                                                                                                }
+                                                                                                            ],
+                                                                                             "combinator":  "and"
+                                                                                         },
+                                                                          "renameOutput":  true,
+                                                                          "outputKey":  "✉️ Почта"
+                                                                      }
+                                                                  ]
+                                                   },
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "type":  "n8n-nodes-base.switch",
+                      "typeVersion":  3,
+                      "position":  [
+                                       -11648,
+                                       2096
+                                   ],
+                      "name":  "Global Router",
+                      "id":  "00899f4d-1611-44b8-9760-d10fa3974f48"
+                  },
+                  {
+                      "parameters":  {
+                                         "chatId":  "YOUR_CHATID_PLACEHOLDER",
+                                         "text":  "Главное меню: Выберите нужный раздел:",
+                                         "replyMarkup":  "replyKeyboard",
+                                         "replyKeyboard":  {
+                                                               "rows":  [
+                                                                            {
+                                                                                "row":  {
+                                                                                            "buttons":  [
+                                                                                                            {
+                                                                                                                "text":  "👤 Профиль",
+                                                                                                                "additionalFields":  {
+
+                                                                                                                                     }
+                                                                                                            },
+                                                                                                            {
+                                                                                                                "text":  "📢 В канал",
+                                                                                                                "additionalFields":  {
+
+                                                                                                                                     }
+                                                                                                            }
+                                                                                                        ]
+                                                                                        }
+                                                                            },
+                                                                            {
+                                                                                "row":  {
+                                                                                            "buttons":  [
+                                                                                                            {
+                                                                                                                "text":  "⚙️ Установка",
+                                                                                                                "additionalFields":  {
+
+                                                                                                                                     }
+                                                                                                            },
+                                                                                                            {
+                                                                                                                "text":  "💳 Оплата",
+                                                                                                                "additionalFields":  {
+
+                                                                                                                                     }
+                                                                                                            }
+                                                                                                        ]
+                                                                                        }
+                                                                            },
+                                                                            {
+                                                                                "row":  {
+                                                                                            "buttons":  [
+                                                                                                            {
+                                                                                                                "text":  "🔑 Ключ",
+                                                                                                                "additionalFields":  {
+
+                                                                                                                                     }
+                                                                                                            }
+                                                                                                        ]
+                                                                                        }
+                                                                            }
+                                                                        ]
+                                                           },
+                                         "replyKeyboardOptions":  {
+
+                                                                  },
+                                         "additionalFields":  {
+                                                                  "appendAttribution":  false
+                                                              }
+                                     },
+                      "type":  "n8n-nodes-base.telegram",
+                      "typeVersion":  1.2,
+                      "position":  [
+                                       -11152,
+                                       1888
+                                   ],
+                      "name":  "Главное меню",
+                      "id":  "f3bf57cf-3fe5-48d6-a79a-42e884318e61"
+                  },
+                  {
+                      "parameters":  {
+                                         "chatId":  "YOUR_CHATID_PLACEHOLDER",
+                                         "text":  "={{ $json.profile_text }}",
+                                         "replyMarkup":  "replyKeyboard",
+                                         "replyKeyboard":  {
+                                                               "rows":  [
+                                                                            {
+                                                                                "row":  {
+                                                                                            "buttons":  [
+                                                                                                            {
+                                                                                                                "text":  "🔙 Назад",
+                                                                                                                "additionalFields":  {
+
+                                                                                                                                     }
+                                                                                                            },
+                                                                                                            {
+                                                                                                                "text":  "✉️ Почта",
+                                                                                                                "additionalFields":  {
+
+                                                                                                                                     }
+                                                                                                            },
+                                                                                                            {
+                                                                                                                "text":  "🔑 Ключ",
+                                                                                                                "additionalFields":  {
+
+                                                                                                                                     }
+                                                                                                            }
+                                                                                                        ]
+                                                                                        }
+                                                                            }
+                                                                        ]
+                                                           },
+                                         "replyKeyboardOptions":  {
+
+                                                                  },
+                                         "additionalFields":  {
+                                                                  "appendAttribution":  false
+                                                              }
+                                     },
+                      "type":  "n8n-nodes-base.telegram",
+                      "typeVersion":  1.2,
+                      "position":  [
+                                       -10752,
+                                       2048
+                                   ],
+                      "name":  "👤 Профиль1",
+                      "id":  "84c3caa8-7c45-456a-bdcf-b3ff32c6c9f0"
+                  },
+                  {
+                      "parameters":  {
+                                         "chatId":  "YOUR_CHATID_PLACEHOLDER",
+                                         "text":  "Вот ссылка на наш канал: @Fr1rndvpn",
+                                         "replyMarkup":  "replyKeyboard",
+                                         "replyKeyboard":  {
+                                                               "rows":  [
+                                                                            {
+                                                                                "row":  {
+                                                                                            "buttons":  [
+                                                                                                            {
+                                                                                                                "text":  "🔙 Назад",
+                                                                                                                "additionalFields":  {
+
+                                                                                                                                     }
+                                                                                                            }
+                                                                                                        ]
+                                                                                        }
+                                                                            }
+                                                                        ]
+                                                           },
+                                         "replyKeyboardOptions":  {
+
+                                                                  },
+                                         "additionalFields":  {
+                                                                  "appendAttribution":  false
+                                                              }
+                                     },
+                      "type":  "n8n-nodes-base.telegram",
+                      "typeVersion":  1.2,
+                      "position":  [
+                                       -11744,
+                                       2512
+                                   ],
+                      "name":  "📢 В канал1",
+                      "id":  "de450021-80ca-4b41-9036-2bd506b1c33a"
+                  },
+                  {
+                      "parameters":  {
+                                         "chatId":  "YOUR_CHATID_PLACEHOLDER",
+                                         "text":  "💳 Раздел оплаты.\n\nВыберите нужный тариф.",
+                                         "replyMarkup":  "replyKeyboard",
+                                         "replyKeyboard":  {
+                                                               "rows":  [
+                                                                            {
+                                                                                "row":  {
+                                                                                            "buttons":  [
+                                                                                                            {
+                                                                                                                "text":  "🔙 Назад",
+                                                                                                                "additionalFields":  {
+
+                                                                                                                                     }
+                                                                                                            }
+                                                                                                        ]
+                                                                                        }
+                                                                            }
+                                                                        ]
+                                                           },
+                                         "replyKeyboardOptions":  {
+
+                                                                  },
+                                         "additionalFields":  {
+                                                                  "appendAttribution":  false
+                                                              }
+                                     },
+                      "type":  "n8n-nodes-base.telegram",
+                      "typeVersion":  1.2,
+                      "position":  [
+                                       -10864,
+                                       2208
+                                   ],
+                      "name":  "💳 Оплата1",
+                      "id":  "2a381fec-2398-49b3-bf86-0edae3f90bb9"
+                  },
+                  {
+                      "parameters":  {
+                                         "chatId":  "YOUR_CHATID_PLACEHOLDER",
+                                         "text":  "🛠 Выберите устройство, которое хотите подключить:",
+                                         "replyMarkup":  "replyKeyboard",
+                                         "replyKeyboard":  {
+                                                               "rows":  [
+                                                                            {
+                                                                                "row":  {
+                                                                                            "buttons":  [
+                                                                                                            {
+                                                                                                                "text":  "телефон",
+                                                                                                                "additionalFields":  {
+
+                                                                                                                                     }
+                                                                                                            },
+                                                                                                            {
+                                                                                                                "text":  "Компьютер",
+                                                                                                                "additionalFields":  {
+
+                                                                                                                                     }
+                                                                                                            }
+                                                                                                        ]
+                                                                                        }
+                                                                            },
+                                                                            {
+                                                                                "row":  {
+                                                                                            "buttons":  [
+                                                                                                            {
+                                                                                                                "text":  "Телевизор",
+                                                                                                                "additionalFields":  {
+
+                                                                                                                                     }
+                                                                                                            },
+                                                                                                            {
+                                                                                                                "text":  "назад",
+                                                                                                                "additionalFields":  {
+
+                                                                                                                                     }
+                                                                                                            }
+                                                                                                        ]
+                                                                                        }
+                                                                            }
+                                                                        ]
+                                                           },
+                                         "replyKeyboardOptions":  {
+
+                                                                  },
+                                         "additionalFields":  {
+                                                                  "appendAttribution":  false
+                                                              }
+                                     },
+                      "type":  "n8n-nodes-base.telegram",
+                      "typeVersion":  1.2,
+                      "position":  [
+                                       -11744,
+                                       2656
+                                   ],
+                      "name":  "⚙️ Установка1",
+                      "id":  "e694fec0-0447-464b-bc40-1e1f868df9a7"
+                  },
+                  {
+                      "parameters":  {
+                                         "chatId":  "YOUR_CHATID_PLACEHOLDER",
+                                         "text":  "📱 НАСТРОЙКА НА ТЕЛЕФОНЕ\n\n⚠️ ПЕРЕД НАСТРОЙКОЙ: Скопируйте ваш ключ в меню «🔑 Мой Ключ».\n\n🍏 ДЛЯ IPHONE (iOS):\n\n1️⃣ AmneziaVPN\n• Скачать: https://amnezia.org/ru (раздел iOS)\n• Настройка: «Добавить сервер» -\u003e «Через Share-ссылку, ключ или QR» -\u003e «Подключить».\n\n2️⃣ V2Box\n• Скачать: В App Store поиск \"V2Box - V2ray Client\"\n• Настройка: Вкладка \"Configs\" -\u003e Плюс «+» вверху -\u003e \"Import vless// from Clipboard\". Вернуться на \"Home\" -\u003e \"Tap to connect\".\n\n3️⃣ FoXray\n• Скачать: В App Store поиск \"FoXray\"\n• Настройка: Плюс «+» вверху -\u003e \"Clipboard\". Кликнуть на появившийся сервер -\u003e Кнопка «Play» (Старт) внизу.\n\n\n🤖 ДЛЯ ANDROID:\n\n1️⃣ AmneziaVPN\n• Скачать: https://amnezia.org/ru (раздел Android)\n• Настройка: «Добавить сервер» -\u003e «Импорт из буфера обмена» -\u003e «Подключить».\n\n2️⃣ v2rayNG\n• Скачать: В Google Play поиск \"v2rayNG\"\n• Настройка: Плюс «+» вверху -\u003e «Импорт профиля из буфера обмена». Кликнуть на сервер -\u003e Нажать круглую кнопку «V» внизу.\n\n3️⃣ NekoBox\n• Скачать: В Google Play поиск \"NekoBox\"\n• Настройка: Раздел \"Профили\" -\u003e Плюс «+» вверху -\u003e \"Импортировать из буфера обмена\". Выбрать профиль -\u003e Нажать кнопку подключения.",
+                                         "replyMarkup":  "replyKeyboard",
+                                         "replyKeyboard":  {
+                                                               "rows":  [
+                                                                            {
+                                                                                "row":  {
+                                                                                            "buttons":  [
+                                                                                                            {
+                                                                                                                "text":  "🔙 Назад",
+                                                                                                                "additionalFields":  {
+
+                                                                                                                                     }
+                                                                                                            }
+                                                                                                        ]
+                                                                                        }
+                                                                            }
+                                                                        ]
+                                                           },
+                                         "replyKeyboardOptions":  {
+
+                                                                  },
+                                         "additionalFields":  {
+                                                                  "appendAttribution":  false
+                                                              }
+                                     },
+                      "type":  "n8n-nodes-base.telegram",
+                      "typeVersion":  1.2,
+                      "position":  [
+                                       -11744,
+                                       2800
+                                   ],
+                      "name":  "Инструкция: Телефон1",
+                      "id":  "79f22fac-48c2-47a3-8c1f-ff155ba43a18"
+                  },
+                  {
+                      "parameters":  {
+                                         "chatId":  "YOUR_CHATID_PLACEHOLDER",
+                                         "text":  "💻 НАСТРОЙКА НА КОМПЬЮТЕРЕ\n\n⚠️ ПЕРЕД НАСТРОЙКОЙ: Скопируйте ваш ключ в меню «🔑 Мой Ключ».\n\n🪟 ДЛЯ WINDOWS:\n\n1️⃣ AmneziaVPN (Рекомендуем)\n• Скачать: https://amnezia.org/ru (раздел Windows)\n• Настройка: «Добавить сервер» -\u003e «Из буфера обмена» -\u003e «Подключить».\n\n2️⃣ v2rayN\n• Скачать: GitHub (программа v2rayN)\n• Настройка: Меню \"Server\" -\u003e \"Import bulk URL from clipboard\". Выбрать сервер -\u003e Нажать Enter. В трее (возле часов) ПКМ по иконке -\u003e \"System Proxy\" -\u003e \"Set System Proxy\".\n\n\n🍏 ДЛЯ macOS:\n\n1️⃣ AmneziaVPN\n• Скачать: https://amnezia.org/ru (раздел macOS)\n• Настройка: «Добавить сервер» -\u003e «Добавить из буфера обмена» -\u003e Включить тумблер.\n\n2️⃣ V2Box / FoXray\n• Скачать: В Mac App Store поиск \"V2Box\" или \"FoXray\"\n• Настройка: Плюс «+» в правом верхнем углу -\u003e \"Import from Clipboard\". Выбрать сервер -\u003e Нажать \"Connect\".",
+                                         "replyMarkup":  "replyKeyboard",
+                                         "replyKeyboard":  {
+                                                               "rows":  [
+                                                                            {
+                                                                                "row":  {
+                                                                                            "buttons":  [
+                                                                                                            {
+                                                                                                                "text":  "🔙 Назад",
+                                                                                                                "additionalFields":  {
+
+                                                                                                                                     }
+                                                                                                            }
+                                                                                                        ]
+                                                                                        }
+                                                                            }
+                                                                        ]
+                                                           },
+                                         "replyKeyboardOptions":  {
+
+                                                                  },
+                                         "additionalFields":  {
+                                                                  "appendAttribution":  false
+                                                              }
+                                     },
+                      "type":  "n8n-nodes-base.telegram",
+                      "typeVersion":  1.2,
+                      "position":  [
+                                       -11744,
+                                       2960
+                                   ],
+                      "name":  "Инструкция: Компьютер1",
+                      "id":  "8229827d-f527-4c78-8db5-4821a710bad7"
+                  },
+                  {
+                      "parameters":  {
+                                         "chatId":  "YOUR_CHATID_PLACEHOLDER",
+                                         "text":  "📺 НАСТРОЙКА НА ТЕЛЕВИЗОРЕ\n\n💡 Как перенести ключ: Отправьте ключ себе в «Избранное» в Telegram на ТВ и скопируйте. Либо перекиньте текст через бесплатное приложение «Send Files to TV».\n\n🤖 ДЛЯ ANDROID TV / SMART TV:\n\n1️⃣ AmneziaVPN\n• Скачать: В Google Play на ТВ поиск \"AmneziaVPN\"\n• Настройка: «Добавить сервер» -\u003e «Через Share-ссылку или текст» -\u003e Вставить ключ -\u003e «Подключить».\n\n2️⃣ v2rayNG\n• Скачать: В Google Play на ТВ поиск \"v2rayNG\"\n• Настройка: Плюс «+» вверху -\u003e «Импорт профиля из буфера обмена». Кликнуть на сервер -\u003e Нажать кнопку подключения.\n\n\n🍏 ДЛЯ APPLE TV (нужна tvOS 17+):\n\n1️⃣ V2Box / FoXray\n• Скачать: В App Store на Apple TV поиск \"V2Box\" или \"FoXray\"\n• Настройка: Скопируйте ключ на iPhone. На Apple TV в приложении нажмите «Добавить» -\u003e «Из буфера обмена iPhone» (общий буфер подтянется сам) -\u003e Нажать \"Connect\".",
+                                         "replyMarkup":  "replyKeyboard",
+                                         "replyKeyboard":  {
+                                                               "rows":  [
+                                                                            {
+                                                                                "row":  {
+                                                                                            "buttons":  [
+                                                                                                            {
+                                                                                                                "text":  "🔙 Назад",
+                                                                                                                "additionalFields":  {
+
+                                                                                                                                     }
+                                                                                                            }
+                                                                                                        ]
+                                                                                        }
+                                                                            }
+                                                                        ]
+                                                           },
+                                         "replyKeyboardOptions":  {
+
+                                                                  },
+                                         "additionalFields":  {
+                                                                  "appendAttribution":  false
+                                                              }
+                                     },
+                      "type":  "n8n-nodes-base.telegram",
+                      "typeVersion":  1.2,
+                      "position":  [
+                                       -11744,
+                                       3168
+                                   ],
+                      "name":  "Инструкция: Телевизор1",
+                      "id":  "65865927-154e-4ad5-bf51-0cb9e603aebf"
+                  },
+                  {
+                      "parameters":  {
+                                         "operation":  "getAll",
+                                         "tableId":  "clients"
+                                     },
+                      "type":  "n8n-nodes-base.supabase",
+                      "typeVersion":  1,
+                      "position":  [
+                                       -11152,
+                                       2048
+                                   ],
+                      "name":  "Инфо о пользователе",
+                      "alwaysOutputData":  true,
+                      "id":  "140d2b4c-b94c-4a2f-a3ca-b05780989a52"
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "// 1. Ловим ID того, кто написал в бот\nconst chatId = $(\u0027Telegram Trigger\u0027).item.json.message.chat.id;\n\n// 2. Получаем всех юзеров из предыдущей ноды Supabase\nconst allClients = $input.all();\n\n// 3. Ищем в массиве строку, где telegram_id совпадает с chatId\nconst foundClient = allClients.find(client =\u003e Number(client.json.telegram_id) === Number(chatId));\n\nif (!foundClient) {\n  return [{\n    json: {\n      profile_text: \"⚠️ Профиль не найден. Нажмите /start для регистрации.\"\n    }\n  }];\n}\n\nconst user = foundClient.json;\n\n// 4. Проверяем почту: если пустая (null), пишем предупреждение\nlet emailLine = \"\";\nif (user.email) {\n  emailLine = `📧 Email: ${user.email}`;\n} else {\n  emailLine = \"📧 Email: Не указан ⚠️\\n\\nℹ️ Пожалуйста, заполните ваш Email на всякий случай.\";\n}\n\n// 5. Собираем итоговое сообщение\nconst finalMessage = `👤 ЛИЧНЫЙ КАБИНЕТ\\n\\n` +\n                   `📝 Имя: ${user.first_name || \"Не указано\"}\\n` +\n                   `💰 Баланс: ${user.balance || 0} Токенов.\\n\\n` +\n                   `${emailLine}`;\n\n// Передаем готовый текст в следующую ноду Телеграма\nreturn [{\n  json: {\n    profile_text: finalMessage\n  }\n}];"
+                                     },
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  2,
+                      "position":  [
+                                       -10944,
+                                       2048
+                                   ],
+                      "id":  "a438e73a-b833-43fc-85cd-cf9d001efb93",
+                      "name":  "Code in JavaScript"
+                  },
+                  {
+                      "parameters":  {
+                                         "operation":  "sendAndWait",
+                                         "chatId":  "YOUR_CHATID_PLACEHOLDER",
+                                         "message":  "введите почту",
+                                         "responseType":  "freeText",
+                                         "options":  {
+                                                         "appendAttribution":  false
+                                                     }
+                                     },
+                      "type":  "n8n-nodes-base.telegram",
+                      "typeVersion":  1.2,
+                      "position":  [
+                                       -11424,
+                                       2800
+                                   ],
+                      "name":  "✉️ Почта",
+                      "id":  "ce930621-09da-4284-ae7a-d9bf30590f3f",
+                      "alwaysOutputData":  true
+                  },
+                  {
+                      "parameters":  {
+                                         "operation":  "update",
+                                         "tableId":  "clients",
+                                         "matchType":  "allFilters",
+                                         "filters":  {
+                                                         "conditions":  [
+                                                                            {
+                                                                                "keyName":  "=telegram_id",
+                                                                                "condition":  "eq",
+                                                                                "keyValue":  "={{ $(\u0027Telegram Trigger\u0027).item.json.message.chat.id }}"
+                                                                            }
+                                                                        ]
+                                                     },
+                                         "fieldsUi":  {
+                                                          "fieldValues":  [
+                                                                              {
+                                                                                  "fieldId":  "email",
+                                                                                  "fieldValue":  "={{ $json.data.text }}"
+                                                                              }
+                                                                          ]
+                                                      }
+                                     },
+                      "type":  "n8n-nodes-base.supabase",
+                      "typeVersion":  1,
+                      "position":  [
+                                       -11424,
+                                       2992
+                                   ],
+                      "name":  "Save Email to Supabase",
+                      "id":  "03815ed8-7711-46fb-89cc-e4e9ee840a07"
+                  },
+                  {
+                      "parameters":  {
+                                         "conditions":  {
+                                                            "options":  {
+                                                                            "caseSensitive":  true,
+                                                                            "leftValue":  "",
+                                                                            "typeValidation":  "strict",
+                                                                            "version":  3
+                                                                        },
+                                                            "conditions":  [
+                                                                               {
+                                                                                   "id":  "ab002fe5-2fe9-4294-bc9b-d19cb550775d",
+                                                                                   "leftValue":  "={{ $json.vpn_key }}",
+                                                                                   "rightValue":  "=null",
+                                                                                   "operator":  {
+                                                                                                    "type":  "string",
+                                                                                                    "operation":  "empty",
+                                                                                                    "singleValue":  true
+                                                                                                }
+                                                                               }
+                                                                           ],
+                                                            "combinator":  "or"
+                                                        },
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "type":  "n8n-nodes-base.if",
+                      "typeVersion":  2.3,
+                      "position":  [
+                                       -10608,
+                                       2512
+                                   ],
+                      "id":  "25513779-0f69-4b17-96ec-f0d51692cb19",
+                      "name":  "If"
+                  },
+                  {
+                      "parameters":  {
+                                         "conditions":  {
+                                                            "options":  {
+                                                                            "caseSensitive":  true,
+                                                                            "leftValue":  "",
+                                                                            "typeValidation":  "strict",
+                                                                            "version":  3
+                                                                        },
+                                                            "conditions":  [
+                                                                               {
+                                                                                   "id":  "07b0998b-78f5-497b-b0a6-f30cc486b44e",
+                                                                                   "leftValue":  "={{ $json.balance }}",
+                                                                                   "rightValue":  1,
+                                                                                   "operator":  {
+                                                                                                    "type":  "number",
+                                                                                                    "operation":  "gt"
+                                                                                                }
+                                                                               }
+                                                                           ],
+                                                            "combinator":  "and"
+                                                        },
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "type":  "n8n-nodes-base.if",
+                      "typeVersion":  2.3,
+                      "position":  [
+                                       -10816,
+                                       2512
+                                   ],
+                      "id":  "de598922-a592-433e-b836-51cd63038b7f",
+                      "name":  "If1"
+                  },
+                  {
+                      "parameters":  {
+                                         "chatId":  "YOUR_CHATID_PLACEHOLDER",
+                                         "text":  "недостаточно средств",
+                                         "replyMarkup":  "replyKeyboard",
+                                         "replyKeyboard":  {
+                                                               "rows":  [
+                                                                            {
+                                                                                "row":  {
+                                                                                            "buttons":  [
+                                                                                                            {
+                                                                                                                "text":  "🔙 Назад",
+                                                                                                                "additionalFields":  {
+
+                                                                                                                                     }
+                                                                                                            }
+                                                                                                        ]
+                                                                                        }
+                                                                            }
+                                                                        ]
+                                                           },
+                                         "replyKeyboardOptions":  {
+
+                                                                  },
+                                         "additionalFields":  {
+                                                                  "appendAttribution":  false
+                                                              }
+                                     },
+                      "type":  "n8n-nodes-base.telegram",
+                      "typeVersion":  1.2,
+                      "position":  [
+                                       -10704,
+                                       2704
+                                   ],
+                      "name":  "нет денег",
+                      "id":  "f0df18ca-6953-4467-8a33-fed30677e213"
+                  },
+                  {
+                      "parameters":  {
+                                         "chatId":  "YOUR_CHATID_PLACEHOLDER",
+                                         "text":  "=🔑 \u003cb\u003eУ вас уже есть active VPN-ключ:\u003c/b\u003e\n\n\u003ccode\u003e{{ $json.vpn_key }}\u003c/code\u003e\n\nИспользуйте его для подключения в приложении.",
+                                         "replyMarkup":  "replyKeyboard",
+                                         "replyKeyboard":  {
+                                                               "rows":  [
+                                                                            {
+                                                                                "row":  {
+                                                                                            "buttons":  [
+                                                                                                            {
+                                                                                                                "text":  "🔙 Назад",
+                                                                                                                "additionalFields":  {
+
+                                                                                                                                     }
+                                                                                                            }
+                                                                                                        ]
+                                                                                        }
+                                                                            }
+                                                                        ]
+                                                           },
+                                         "replyKeyboardOptions":  {
+
+                                                                  },
+                                         "additionalFields":  {
+                                                                  "appendAttribution":  false,
+                                                                  "parse_mode":  "HTML"
+                                                              }
+                                     },
+                      "type":  "n8n-nodes-base.telegram",
+                      "typeVersion":  1.2,
+                      "position":  [
+                                       -9952,
+                                       2736
+                                   ],
+                      "name":  "вот ваш ключ",
+                      "id":  "f316627b-6698-4084-89d8-29e232092d32"
+                  },
+                  {
+                      "parameters":  {
+                                         "method":  "POST",
+                                         "url":  "https://friendvpn.anondns.net/api/admin/token",
+                                         "sendBody":  true,
+                                         "contentType":  "raw",
+                                         "rawContentType":  "application/x-www-form-urlencoded",
+                                         "body":  "username=YOUR_USERNAME\u0026password=YOUR_PASSWORD_PLACEHOLDER",
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.2,
+                      "position":  [
+                                       -10272,
+                                       2384
+                                   ],
+                      "name":  "HTTP: Get Marzban Token",
+                      "id":  "46dd4cad-cdaa-4654-b5fb-1719b1c2e8f1"
+                  },
+                  {
+                      "parameters":  {
+                                         "method":  "POST",
+                                         "url":  "https://friendvpn.anondns.net/api/user",
+                                         "sendHeaders":  true,
+                                         "headerParameters":  {
+                                                                  "parameters":  [
+                                                                                     {
+                                                                                         "name":  "Authorization",
+                                                                                         "value":  "=Bearer {{ $(\u0027HTTP: Get Marzban Token\u0027).item.json.access_token }}"
+                                                                                     }
+                                                                                 ]
+                                                              },
+                                         "sendBody":  true,
+                                         "specifyBody":  "json",
+                                         "jsonBody":  "={\n  \"username\": \"id_{{ $json.telegram_id }}\",\n  \"proxies\": {\n    \"shadowsocks\": {\n      \"inbounds\": {}\n    }\n  },\n  \"expire\": 1969736400,\n  \"data_limit\": 53687091200\n}",
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.2,
+                      "position":  [
+                                       -10096,
+                                       2400
+                                   ],
+                      "name":  "HTTP: Create Marzban User",
+                      "id":  "7ff92a7a-caf4-4dbd-87d4-57eb471c61e3"
+                  },
+                  {
+                      "parameters":  {
+                                         "operation":  "update",
+                                         "tableId":  "clients",
+                                         "matchType":  "allFilters",
+                                         "filters":  {
+                                                         "conditions":  [
+                                                                            {
+                                                                                "keyName":  "telegram_id",
+                                                                                "condition":  "eq",
+                                                                                "keyValue":  "={{ $(\u0027Telegram Trigger\u0027).item.json.message.chat.id }}"
+                                                                            }
+                                                                        ]
+                                                     },
+                                         "fieldsUi":  {
+                                                          "fieldValues":  [
+                                                                              {
+                                                                                  "fieldId":  "vpn_key",
+                                                                                  "fieldValue":  "={{ $(\u0027HTTP: Get Marzban Token\u0027).item.json.access_token }}"
+                                                                              }
+                                                                          ]
+                                                      }
+                                     },
+                      "type":  "n8n-nodes-base.supabase",
+                      "typeVersion":  1,
+                      "position":  [
+                                       -9920,
+                                       2400
+                                   ],
+                      "name":  "Supabase: Save New Key",
+                      "id":  "e4250d59-14fc-4660-8d86-029172323977"
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "// 1. Получаем ID текущего пользователя из Телеграма (берем из самого первого триггера)\nconst currentTelegramId = Number($(\u0027Telegram Trigger\u0027).item.json.message.chat.id);\n\n// 2. Собираем ВСЕХ юзеров, которые пришли из Supabase\nconst allItems = $(\u0027GET Юзера\u0027).all();\nconst usersArray = allItems.map(item =\u003e item.json);\n\n// 3. Ищем нашего пользователя в получившемся массиве\nconst currentUser = usersArray.find(user =\u003e {\n  if (!user || !user.telegram_id) return false;\n  return Number(user.telegram_id) === currentTelegramId;\n});\n\n// 4. Возвращаем результат\nif (currentUser) {\n  return { json: currentUser };\n} else {\n  return { \n    json: { \n      error: \"Пользователь до сих пор не найден\",\n      debug_current_id: currentTelegramId,\n      debug_total_users_found: usersArray.length,\n      all_found_ids: usersArray.map(u =\u003e u.telegram_id) // выведем список всех ID, что смогли поймать\n    } \n  };\n}"
+                                     },
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  2,
+                      "position":  [
+                                       -10272,
+                                       2672
+                                   ],
+                      "id":  "84fa07ac-b745-418c-9f24-5492f59cd7ac",
+                      "name":  "Code in JavaScript1"
+                  },
+                  {
+                      "parameters":  {
+                                         "chatId":  "YOUR_CHATID_PLACEHOLDER",
+                                         "text":  "=🔑 \u003cb\u003eВот ваш ключ:\u003c/b\u003e\n\n\u003ccode\u003e{{ $json.vpn_key }}\u003c/code\u003e\n\nИспользуйте его для подключения в приложении.",
+                                         "replyMarkup":  "replyKeyboard",
+                                         "replyKeyboard":  {
+                                                               "rows":  [
+                                                                            {
+                                                                                "row":  {
+                                                                                            "buttons":  [
+                                                                                                            {
+                                                                                                                "text":  "🔙 Назад",
+                                                                                                                "additionalFields":  {
+
+                                                                                                                                     }
+                                                                                                            }
+                                                                                                        ]
+                                                                                        }
+                                                                            }
+                                                                        ]
+                                                           },
+                                         "replyKeyboardOptions":  {
+
+                                                                  },
+                                         "additionalFields":  {
+                                                                  "appendAttribution":  false,
+                                                                  "parse_mode":  "HTML"
+                                                              }
+                                     },
+                      "type":  "n8n-nodes-base.telegram",
+                      "typeVersion":  1.2,
+                      "position":  [
+                                       -9744,
+                                       2400
+                                   ],
+                      "name":  "вот ваш ключ1",
+                      "id":  "61f12528-3ea3-4dad-98b9-2c1932af75fc"
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "// 1. Берем ID того, кто написал боту\nconst currentTelegramId = Number($(\u0027Telegram Trigger\u0027).item.json.message.chat.id);\n\n// 2. Собираем всех юзеров из Supabase в один нормальный массив\nconst allUsers = $(\u0027GET Юзера\u0027).all().map(item =\u003e item.json);\n\n// 3. Ищем конкретно твою строчку по ID\nconst currentUser = allUsers.find(user =\u003e Number(user.telegram_id) === currentTelegramId);\n\n// Если тебя вообще нет в базе (странно, но на всякий случай)\nif (!currentUser) {\n  return {\n    json: {\n      user_found: false,\n      go_to_branch: \"create_new_key\", // отправляем на создание\n      reason: \"Юзер вообще не найден в базе\"\n    }\n  };\n}\n\n// 4. Проверяем твой личный vpn_key (смотрим, пустой он или нет)\nconst key = currentUser.vpn_key;\nconst isKeyEmpty = !key || key.toString().trim() === \"\" || key === null;\n\n// 5. Выпускаем дальше все твои личные данные + готовый ответ, куда идти воркфлоу\nreturn {\n  json: {\n    user_found: true,\n    telegram_id: currentUser.telegram_id,\n    balance: currentUser.balance,\n    vpn_key: currentUser.vpn_key,\n    first_name: currentUser.first_name,\n    username: currentUser.username,\n    // Вот эта переменная скажет, куда идти дальше\n    go_to_branch: isKeyEmpty ? \"create_new_key\" : \"show_existing_key\"\n  }\n};"
+                                     },
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  2,
+                      "position":  [
+                                       -11008,
+                                       2512
+                                   ],
+                      "id":  "1d7edc3a-5a00-4cf6-b7c1-363a74b04aab",
+                      "name":  "отсев пользователя"
+                  },
+                  {
+                      "parameters":  {
+                                         "method":  "POST",
+                                         "url":  "http://78.40.199.121:51821/api/wireguard/client",
+                                         "sendHeaders":  true,
+                                         "headerParameters":  {
+                                                                  "parameters":  [
+                                                                                     {
+                                                                                         "name":  "X-API-Key",
+                                                                                         "value":  "f311370c7c720333493104d5eec8f576"
+                                                                                     },
+                                                                                     {
+                                                                                         "name":  "Content-Type",
+                                                                                         "value":  "application/json"
+                                                                                     }
+                                                                                 ]
+                                                              },
+                                         "sendBody":  true,
+                                         "specifyBody":  "=json",
+                                         "bodyParameters":  {
+                                                                "parameters":  [
+                                                                                   {
+
+                                                                                   }
+                                                                               ]
+                                                            },
+                                         "jsonBody":  "==id_{{ $json.telegram_id || $json.message.chat.id }}",
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.2,
+                      "position":  [
+                                       -8192,
+                                       2512
+                                   ],
+                      "name":  "HTTP: Create Amnezia User",
+                      "id":  "2d9517c1-14df-4079-bb1a-980eb78ea234"
+                  },
+                  {
+                      "parameters":  {
+                                         "operation":  "insert"
+                                     },
+                      "type":  "n8n-nodes-base.supabase",
+                      "typeVersion":  1,
+                      "position":  [
+                                       -7856,
+                                       2512
+                                   ],
+                      "name":  "Supabase: Save New Key1",
+                      "id":  "0f8b6426-4bd2-4abb-aef3-d3df49b92c19"
+                  },
+                  {
+                      "parameters":  {
+                                         "chatId":  "YOUR_CHATID_PLACEHOLDER",
+                                         "text":  "=🚀 \u003cb\u003eВаш пуленепробиваемый VPN готов!\u003c/b\u003e\n\nСкопируйте текст ниже, скачайте приложение \u003cb\u003eAmnezia VPN\u003c/b\u003e, нажмите \"Добавить сервер\" -\u003e \"Из текста\" и вставьте этот код:\n\n\u003ccode\u003e{{ $(\u0027HTTP: Create Amnezia User\u0027).item.json.config }}\u003c/code\u003e",
+                                         "replyMarkup":  "replyKeyboard",
+                                         "replyKeyboard":  {
+                                                               "rows":  [
+                                                                            {
+                                                                                "row":  {
+                                                                                            "buttons":  [
+                                                                                                            {
+                                                                                                                "text":  "🔙 Назад",
+                                                                                                                "additionalFields":  {
+
+                                                                                                                                     }
+                                                                                                            }
+                                                                                                        ]
+                                                                                        }
+                                                                            }
+                                                                        ]
+                                                           },
+                                         "replyKeyboardOptions":  {
+
+                                                                  },
+                                         "additionalFields":  {
+                                                                  "appendAttribution":  false,
+                                                                  "parse_mode":  "HTML"
+                                                              }
+                                     },
+                      "type":  "n8n-nodes-base.telegram",
+                      "typeVersion":  1.2,
+                      "position":  [
+                                       -7504,
+                                       2512
+                                   ],
+                      "name":  "вот ваш ключ2",
+                      "id":  "c1bbfc49-7678-42e9-9c6e-ec6ad144670c"
+                  }
+              ],
+    "connections":  {
+                        "Telegram Trigger":  {
+                                                 "main":  [
+                                                              [
+                                                                  {
+                                                                      "node":  "проверка на бота",
+                                                                      "type":  "main",
+                                                                      "index":  0
+                                                                  }
+                                                              ]
+                                                          ]
+                                             },
+                        "GET Юзера":  {
+                                          "main":  [
+                                                       [
+                                                           {
+                                                               "node":  "Code (Сбор и проверка ID)",
+                                                               "type":  "main",
+                                                               "index":  0
+                                                           }
+                                                       ]
+                                                   ]
+                                      },
+                        "INSERT Новый":  {
+                                             "main":  [
+                                                          [
+                                                              {
+                                                                  "node":  "Приветствие",
+                                                                  "type":  "main",
+                                                                  "index":  0
+                                                              }
+                                                          ]
+                                                      ]
+                                         },
+                        "проверка на бота":  {
+                                                 "main":  [
+                                                              [
+                                                                  {
+                                                                      "node":  "GET Юзера",
+                                                                      "type":  "main",
+                                                                      "index":  0
+                                                                  }
+                                                              ]
+                                                          ]
+                                             },
+                        "Приветствие":  {
+                                            "main":  [
+                                                         [
+                                                             {
+                                                                 "node":  "Global Router",
+                                                                 "type":  "main",
+                                                                 "index":  0
+                                                             }
+                                                         ]
+                                                     ]
+                                        },
+                        "Code (Сбор и проверка ID)":  {
+                                                          "main":  [
+                                                                       [
+                                                                           {
+                                                                               "node":  "Есть в базе?1",
+                                                                               "type":  "main",
+                                                                               "index":  0
+                                                                           }
+                                                                       ]
+                                                                   ]
+                                                      },
+                        "Есть в базе?1":  {
+                                              "main":  [
+                                                           [
+                                                               {
+                                                                   "node":  "Global Router",
+                                                                   "type":  "main",
+                                                                   "index":  0
+                                                               }
+                                                           ],
+                                                           [
+                                                               {
+                                                                   "node":  "INSERT Новый",
+                                                                   "type":  "main",
+                                                                   "index":  0
+                                                               }
+                                                           ]
+                                                       ]
+                                          },
+                        "Global Router":  {
+                                              "main":  [
+                                                           [
+                                                               {
+                                                                   "node":  "Главное меню",
+                                                                   "type":  "main",
+                                                                   "index":  0
+                                                               }
+                                                           ],
+                                                           [
+                                                               {
+                                                                   "node":  "Инфо о пользователе",
+                                                                   "type":  "main",
+                                                                   "index":  0
+                                                               }
+                                                           ],
+                                                           [
+                                                               {
+                                                                   "node":  "📢 В канал1",
+                                                                   "type":  "main",
+                                                                   "index":  0
+                                                               }
+                                                           ],
+                                                           [
+                                                               {
+                                                                   "node":  "💳 Оплата1",
+                                                                   "type":  "main",
+                                                                   "index":  0
+                                                               }
+                                                           ],
+                                                           [
+                                                               {
+                                                                   "node":  "⚙️ Установка1",
+                                                                   "type":  "main",
+                                                                   "index":  0
+                                                               }
+                                                           ],
+                                                           [
+                                                               {
+                                                                   "node":  "Инструкция: Телефон1",
+                                                                   "type":  "main",
+                                                                   "index":  0
+                                                               }
+                                                           ],
+                                                           [
+                                                               {
+                                                                   "node":  "Инструкция: Компьютер1",
+                                                                   "type":  "main",
+                                                                   "index":  0
+                                                               }
+                                                           ],
+                                                           [
+                                                               {
+                                                                   "node":  "Инструкция: Телевизор1",
+                                                                   "type":  "main",
+                                                                   "index":  0
+                                                               }
+                                                           ],
+                                                           [
+                                                               {
+                                                                   "node":  "отсев пользователя",
+                                                                   "type":  "main",
+                                                                   "index":  0
+                                                               }
+                                                           ],
+                                                           [
+                                                               {
+                                                                   "node":  "✉️ Почта",
+                                                                   "type":  "main",
+                                                                   "index":  0
+                                                               }
+                                                           ]
+                                                       ]
+                                          },
+                        "Главное меню":  {
+                                             "main":  [
+                                                          [
+
+                                                          ]
+                                                      ]
+                                         },
+                        "Инфо о пользователе":  {
+                                                    "main":  [
+                                                                 [
+                                                                     {
+                                                                         "node":  "Code in JavaScript",
+                                                                         "type":  "main",
+                                                                         "index":  0
+                                                                     }
+                                                                 ]
+                                                             ]
+                                                },
+                        "Code in JavaScript":  {
+                                                   "main":  [
+                                                                [
+                                                                    {
+                                                                        "node":  "👤 Профиль1",
+                                                                        "type":  "main",
+                                                                        "index":  0
+                                                                    }
+                                                                ]
+                                                            ]
+                                               },
+                        "✉️ Почта":  {
+                                         "main":  [
+                                                      [
+                                                          {
+                                                              "node":  "Save Email to Supabase",
+                                                              "type":  "main",
+                                                              "index":  0
+                                                          }
+                                                      ]
+                                                  ]
+                                     },
+                        "Save Email to Supabase":  {
+                                                       "main":  [
+                                                                    [
+                                                                        {
+                                                                            "node":  "Главное меню",
+                                                                            "type":  "main",
+                                                                            "index":  0
+                                                                        }
+                                                                    ]
+                                                                ]
+                                                   },
+                        "If":  {
+                                   "main":  [
+                                                [
+                                                    {
+                                                        "node":  "HTTP: Get Marzban Token",
+                                                        "type":  "main",
+                                                        "index":  0
+                                                    }
+                                                ],
+                                                [
+                                                    {
+                                                        "node":  "Code in JavaScript1",
+                                                        "type":  "main",
+                                                        "index":  0
+                                                    }
+                                                ]
+                                            ]
+                               },
+                        "If1":  {
+                                    "main":  [
+                                                 [
+                                                     {
+                                                         "node":  "If",
+                                                         "type":  "main",
+                                                         "index":  0
+                                                     }
+                                                 ],
+                                                 [
+                                                     {
+                                                         "node":  "нет денег",
+                                                         "type":  "main",
+                                                         "index":  0
+                                                     }
+                                                 ]
+                                             ]
+                                },
+                        "HTTP: Get Marzban Token":  {
+                                                        "main":  [
+                                                                     [
+                                                                         {
+                                                                             "node":  "HTTP: Create Marzban User",
+                                                                             "type":  "main",
+                                                                             "index":  0
+                                                                         }
+                                                                     ]
+                                                                 ]
+                                                    },
+                        "HTTP: Create Marzban User":  {
+                                                          "main":  [
+                                                                       [
+                                                                           {
+                                                                               "node":  "Supabase: Save New Key",
+                                                                               "type":  "main",
+                                                                               "index":  0
+                                                                           }
+                                                                       ]
+                                                                   ]
+                                                      },
+                        "Supabase: Save New Key":  {
+                                                       "main":  [
+                                                                    [
+                                                                        {
+                                                                            "node":  "вот ваш ключ1",
+                                                                            "type":  "main",
+                                                                            "index":  0
+                                                                        }
+                                                                    ]
+                                                                ]
+                                                   },
+                        "Code in JavaScript1":  {
+                                                    "main":  [
+                                                                 [
+                                                                     {
+                                                                         "node":  "вот ваш ключ",
+                                                                         "type":  "main",
+                                                                         "index":  0
+                                                                     }
+                                                                 ]
+                                                             ]
+                                                },
+                        "отсев пользователя":  {
+                                                   "main":  [
+                                                                [
+                                                                    {
+                                                                        "node":  "If1",
+                                                                        "type":  "main",
+                                                                        "index":  0
+                                                                    }
+                                                                ]
+                                                            ]
+                                               },
+                        "HTTP: Create Amnezia User":  {
+                                                          "main":  [
+                                                                       [
+                                                                           {
+                                                                               "node":  "Supabase: Save New Key1",
+                                                                               "type":  "main",
+                                                                               "index":  0
+                                                                           }
+                                                                       ]
+                                                                   ]
+                                                      },
+                        "Supabase: Save New Key1":  {
+                                                        "main":  [
+                                                                     [
+                                                                         {
+                                                                             "node":  "вот ваш ключ2",
+                                                                             "type":  "main",
+                                                                             "index":  0
+                                                                         }
+                                                                     ]
+                                                                 ]
+                                                    }
+                    },
+    "settings":  {
+                     "executionOrder":  "v1",
+                     "binaryMode":  "separate"
+                 },
+    "staticData":  null,
+    "meta":  {
+                 "templateCredsSetupCompleted":  true
+             },
+    "pinData":  {
+
+                },
+    "versionId":  "699545fd-a02d-43be-988c-e621b5c883e0",
+    "activeVersionId":  null,
+    "versionCounter":  1390,
+    "triggerCount":  1,
+    "tags":  [
+
+             ],
+    "shared":  [
+                   {
+                       "updatedAt":  "2026-07-22T06:51:04.843Z",
+                       "createdAt":  "2026-07-22T06:51:04.843Z",
+                       "role":  "workflow:owner",
+                       "workflowId":  "D6z4NovzAGNxfQCM",
+                       "projectId":  "TAbhGdk0kvTh10TJ",
+                       "project":  {
+                                       "updatedAt":  "2026-07-21T16:51:14.212Z",
+                                       "createdAt":  "2026-07-21T16:45:02.267Z",
+                                       "id":  "TAbhGdk0kvTh10TJ",
+                                       "name":  "Alekseyorl779 Alekseyorl779 \u003calekseyorl779@gmail.com\u003e",
+                                       "type":  "personal",
+                                       "icon":  null,
+                                       "description":  null,
+                                       "creatorId":  "05c1e840-c40d-47b5-bfd2-a660e531eafd"
+                                   }
+                   }
+               ],
+    "versionMetadata":  {
+                            "name":  null,
+                            "description":  null
+                        }
+}

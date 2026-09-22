@@ -1,0 +1,16 @@
+# Secrets and local n8n data
+.env
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+.n8n/
+
+# Local exports and credentials
+credentials.json
+secrets/
+private/
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/

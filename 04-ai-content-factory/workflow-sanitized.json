@@ -1,0 +1,554 @@
+﻿{
+    "updatedAt":  "2026-06-11T08:03:48.686Z",
+    "createdAt":  "2026-05-27T08:04:53.360Z",
+    "id":  "SFN4xYk6lQ33Vr6o",
+    "name":  "писатель анеков - Portfolio Demo",
+    "description":  null,
+    "active":  false,
+    "isArchived":  false,
+    "nodes":  [
+                  {
+                      "parameters":  {
+                                         "rule":  {
+                                                      "interval":  [
+                                                                       {
+                                                                           "field":  "minutes",
+                                                                           "minutesInterval":  55
+                                                                       }
+                                                                   ]
+                                                  }
+                                     },
+                      "type":  "n8n-nodes-base.scheduleTrigger",
+                      "typeVersion":  1.3,
+                      "position":  [
+                                       -1232,
+                                       480
+                                   ],
+                      "id":  "c4ae1de6-df3a-41ef-a853-4fb22cef0b2e",
+                      "name":  "Schedule Trigger"
+                  },
+                  {
+                      "parameters":  {
+                                         "documentId":  "YOUR_DOCUMENTID_PLACEHOLDER",
+                                         "sheetName":  {
+                                                           "__rl":  true,
+                                                           "value":  "gid=0",
+                                                           "mode":  "list",
+                                                           "cachedResultName":  "Анекдоты",
+                                                           "cachedResultUrl":  "https://docs.google.com/spreadsheets/d/1AVwNkLkZ4Vc68sYvHwzbjVJaXhJ5mdY44ylEhZfKMNQ/edit#gid=0"
+                                                       },
+                                         "filtersUI":  {
+                                                           "values":  [
+
+                                                                      ]
+                                                       },
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "type":  "n8n-nodes-base.googleSheets",
+                      "typeVersion":  4.7,
+                      "position":  [
+                                       -896,
+                                       480
+                                   ],
+                      "id":  "0218e770-7e2d-438d-985a-eb453029175d",
+                      "name":  "Get row(s) in sheet",
+                      "alwaysOutputData":  true
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID"
+                                     },
+                      "id":  "5dde6438-2135-4fcc-a4ce-21a095ded3b8",
+                      "name":  "Code",
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  1,
+                      "position":  [
+                                       -1072,
+                                       480
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "conditions":  {
+                                                            "options":  {
+                                                                            "caseSensitive":  true,
+                                                                            "leftValue":  "",
+                                                                            "typeValidation":  "strict",
+                                                                            "version":  3
+                                                                        },
+                                                            "conditions":  [
+                                                                               {
+                                                                                   "id":  "26ec606f-a2fa-4e74-988c-7717f7af9ef7",
+                                                                                   "leftValue":  "={{ $json.new_status_count }}",
+                                                                                   "rightValue":  200,
+                                                                                   "operator":  {
+                                                                                                    "type":  "number",
+                                                                                                    "operation":  "lt"
+                                                                                                }
+                                                                               }
+                                                                           ],
+                                                            "combinator":  "and"
+                                                        },
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "type":  "n8n-nodes-base.if",
+                      "typeVersion":  2.3,
+                      "position":  [
+                                       -704,
+                                       720
+                                   ],
+                      "id":  "e81ab9ab-6dfc-44fc-bac4-9f7f29034ac8",
+                      "name":  "If"
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "let count = 0;\n\n// Проходимся по всем входящим элементам\nfor (const item of $input.all()) {\n  // Проверяем, равен ли статус \"new\"\n  if (item.json[\"Статус\"] === \"new\") {\n    count++;\n  }\n}\n\n// Возвращаем результат в виде объекта\nreturn [\n  {\n    \"json\": {\n      \"new_status_count\": count\n    }\n  }\n];"
+                                     },
+                      "id":  "dad0da18-9f99-4069-9671-9259432dba52",
+                      "name":  "Count New Status",
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  1,
+                      "position":  [
+                                       -1248,
+                                       720
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "content":  "## Проверка количество новых в таблице \n",
+                                         "height":  192,
+                                         "width":  720
+                                     },
+                      "type":  "n8n-nodes-base.stickyNote",
+                      "position":  [
+                                       -1280,
+                                       416
+                                   ],
+                      "typeVersion":  1,
+                      "id":  "692564e1-241b-4a99-8248-b552bcbcb64c",
+                      "name":  "Sticky Note"
+                  },
+                  {
+                      "parameters":  {
+                                         "promptType":  "define",
+                                         "text":  "=",
+                                         "messages":  {
+                                                          "messageValues":  [
+                                                                                {
+                                                                                    "type":  "AIMessagePromptTemplate",
+                                                                                    "message":  "Ты — главный редактор подпольного паблика с экстремально черным, постироничным и маргинальным юмором. Твоя задача — взять за основу золотой фонд классических русских анекдотов, полностью деконструировать их, убрать цензуру и переписать в жестком, современном, грязном стиле.\n\nЗАПРЕЩЕНО писать короткие анекдоты в 2-3 строчки. Каждый анекдот должен быть полноценной, сочной, кинематографичной мини-историей (байкой). \n\nСТРУКТУРА КАЖДОГО ТЕКСТА:\n1. Затянутый, атмосферный сетап (минимум 2-3 абзаца): Описывай грязные детали, окружение, вводи сочные диалоги, используй маргинальный уличный сленг и мат (строго в тему и для усиления). Персонажи должны казаться живыми ублюдками, а не картонными фигурками.\n2. Неожиданный панчлайн (финал): Который бьет обухом по голове за счет абсурда, чернухи, грязной анатомии или цинизма.\n\nОБЯЗАТЕЛЬНЫЕ КАТЕГОРИИ ДЛЯ РАЗНООБРАЗИЯ:\n1. Жесткие Кроссоверы: Столкновение персонажей (Вовочка на допросе у Штирлица; Чапаев и Петька ищут закладку; Рабинович на сходке цыган).\n2. Модернизированная классика: Бытовые заготовки (муж из командировки, гаишник и водитель), вывернутые в полный трэш и абсурдное насилие.\n3. Чернуха без тормозов: Юмор на грани фола (религия, инвалиды, расовые и национальные стереотипы). Зло, но технически безупречно.\n4. Пост-ироничный бред: Логика ломается в середине, уходя в дебильный сюрреализм.\n\nТЕХНИЧЕСКИЕ ТРЕБОВАНИЯ К ВЫВОДУ:\nСгенерируй 12 абсолютно разных, длинных и детальных анекдотов. Никаких повторов. \nВывод — строго в формате JSON-массива. Внутри текста анекдотов для прямой речи используй ТОЛЬКО кавычки-ёлочки (« ») или тире, чтобы не сломать валидность JSON-строки.\n\nФормат:\n[\n  {\n    \"text\": \"Длинный текст анекдота с абзацами (используй \\\\n для переноса строк)\"\n  }\n]"
+                                                                                }
+                                                                            ]
+                                                      }
+                                     },
+                      "type":  "@n8n/n8n-nodes-langchain.chainLlm",
+                      "typeVersion":  1.5,
+                      "position":  [
+                                       -1296,
+                                       1024
+                                   ],
+                      "id":  "d825f3da-2778-44c3-b607-ea4e3cd11c73",
+                      "name":  "Basic LLM Chain"
+                  },
+                  {
+                      "parameters":  {
+                                         "model":  "anthropic/claude-sonnet-4.6",
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "type":  "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+                      "typeVersion":  1,
+                      "position":  [
+                                       -1184,
+                                       1200
+                                   ],
+                      "id":  "f50ceae3-89f6-4b06-9d07-ebc51e8badee",
+                      "name":  "OpenRouter Chat Model1"
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "// 1. Пытаемся вытащить строки из ноды \"Get row(s) in sheet\"\nlet tableRows = [];\ntry {\n  tableRows = $(\"Get row(s) in sheet\").all();\n} catch (e) {\n  tableRows = [];\n}\n\nlet lastId = 0;\n\n// Ищем самый большой ID среди тех строк, что смогли получить\nif (tableRows \u0026\u0026 tableRows.length \u003e 0) {\n  const ids = tableRows\n    .map(row =\u003e parseInt(row.json[\"ID\"]))\n    .filter(id =\u003e !isNaN(id));\n    \n  if (ids.length \u003e 0) {\n    lastId = Math.max(...ids);\n  }\n}\n\n// 2. Получаем текст от ИИ и очищаем его от маркдауна\nconst aiResponse = $input.item.json.text;\nif (!aiResponse) {\n  throw new Error(\"Нода ИИ вернула пустой текст!\");\n}\n\nconst cleanJsonText = aiResponse.replace(/```json|```/g, \u0027\u0027).trim();\n\nlet jokesArray = [];\ntry {\n  jokesArray = JSON.parse(cleanJsonText);\n} catch (e) {\n  throw new Error(\"Клод прислал обрезанный или кривой JSON. Проверь параметр \u0027Max Tokens\u0027 в ноде ИИ и увеличь его до 4000+! Ошибка: \" + e.message);\n}\n\n// 3. Форматируем анекдоты, поддерживая оба варианта ключей (text и Анекдот)\nreturn jokesArray.map((jokeItem, index) =\u003e {\n  // Забираем текст шутки, независимо от того, как Клод назвал ключ\n  const jokeText = jokeItem.Анекдот || jokeItem.text || \"\";\n  \n  return {\n    \"json\": {\n      \"ID\": lastId + index + 1,\n      \"Анекдот\": jokeText,\n      \"Статус\": \"new\"\n    }\n  };\n});"
+                                     },
+                      "id":  "673222f9-3dbb-42d8-b4ba-d9e19a2d1cdf",
+                      "name":  "Parse \u0026 Format Jokes",
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  1,
+                      "position":  [
+                                       -656,
+                                       1024
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "operation":  "appendOrUpdate",
+                                         "documentId":  "YOUR_DOCUMENTID_PLACEHOLDER",
+                                         "sheetName":  {
+                                                           "__rl":  true,
+                                                           "value":  "gid=0",
+                                                           "mode":  "list",
+                                                           "cachedResultName":  "Анекдоты",
+                                                           "cachedResultUrl":  "https://docs.google.com/spreadsheets/d/1AVwNkLkZ4Vc68sYvHwzbjVJaXhJ5mdY44ylEhZfKMNQ/edit#gid=0"
+                                                       },
+                                         "columns":  {
+                                                         "mappingMode":  "defineBelow",
+                                                         "value":  {
+                                                                       "ID":  "={{ $json.ID }}",
+                                                                       "Анекдот":  "={{ $json[\u0027Анекдот\u0027] }}",
+                                                                       "Статус":  "={{ $json[\u0027Статус\u0027] }}"
+                                                                   },
+                                                         "matchingColumns":  [
+                                                                                 "ID"
+                                                                             ],
+                                                         "schema":  [
+                                                                        {
+                                                                            "id":  "ID",
+                                                                            "displayName":  "ID",
+                                                                            "required":  false,
+                                                                            "defaultMatch":  false,
+                                                                            "display":  true,
+                                                                            "type":  "string",
+                                                                            "canBeUsedToMatch":  true,
+                                                                            "removed":  false
+                                                                        },
+                                                                        {
+                                                                            "id":  "Анекдот",
+                                                                            "displayName":  "Анекдот",
+                                                                            "required":  false,
+                                                                            "defaultMatch":  false,
+                                                                            "display":  true,
+                                                                            "type":  "string",
+                                                                            "canBeUsedToMatch":  true
+                                                                        },
+                                                                        {
+                                                                            "id":  "Статус",
+                                                                            "displayName":  "Статус",
+                                                                            "required":  false,
+                                                                            "defaultMatch":  false,
+                                                                            "display":  true,
+                                                                            "type":  "string",
+                                                                            "canBeUsedToMatch":  true
+                                                                        },
+                                                                        {
+                                                                            "id":  "Дата создания",
+                                                                            "displayName":  "Дата создания",
+                                                                            "required":  false,
+                                                                            "defaultMatch":  false,
+                                                                            "display":  true,
+                                                                            "type":  "string",
+                                                                            "canBeUsedToMatch":  true
+                                                                        },
+                                                                        {
+                                                                            "id":  "Дата постинга",
+                                                                            "displayName":  "Дата постинга",
+                                                                            "required":  false,
+                                                                            "defaultMatch":  false,
+                                                                            "display":  true,
+                                                                            "type":  "string",
+                                                                            "canBeUsedToMatch":  true
+                                                                        }
+                                                                    ],
+                                                         "attemptToConvertTypes":  false,
+                                                         "convertFieldsToString":  false
+                                                     },
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "type":  "n8n-nodes-base.googleSheets",
+                      "typeVersion":  4.7,
+                      "position":  [
+                                       -496,
+                                       1024
+                                   ],
+                      "id":  "a7db82d1-7ab9-4a7c-8a00-32a3ab084831",
+                      "name":  "Append or update row in sheet"
+                  },
+                  {
+                      "parameters":  {
+                                         "content":  "##Тут заполнение таблицы анекдотами с атрибутом new\n",
+                                         "height":  416,
+                                         "width":  1200
+                                     },
+                      "type":  "n8n-nodes-base.stickyNote",
+                      "position":  [
+                                       -1376,
+                                       960
+                                   ],
+                      "typeVersion":  1,
+                      "id":  "99a1ec55-d11d-420f-967a-8e1c33d695bb",
+                      "name":  "Sticky Note1"
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "let count = 0;\n\n// Проходимся по всем входящим элементам\nfor (const item of $input.all()) {\n  // Проверяем, равен ли статус \"new\"\n  if (item.json[\"Статус\"] === \"approve\") {\n    count++;\n  }\n}\n\n// Возвращаем результат в виде объекта\nreturn [\n  {\n    \"json\": {\n      \"new_status_count\": count\n    }\n  }\n];"
+                                     },
+                      "id":  "dcc49f32-2e1a-48ef-b4b8-fa082dcdfee0",
+                      "name":  "Count New Status1",
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  1,
+                      "position":  [
+                                       -864,
+                                       720
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "conditions":  {
+                                                            "options":  {
+                                                                            "caseSensitive":  true,
+                                                                            "leftValue":  "",
+                                                                            "typeValidation":  "strict",
+                                                                            "version":  3
+                                                                        },
+                                                            "conditions":  [
+                                                                               {
+                                                                                   "id":  "26ec606f-a2fa-4e74-988c-7717f7af9ef7",
+                                                                                   "leftValue":  "={{ $json.new_status_count }}",
+                                                                                   "rightValue":  200,
+                                                                                   "operator":  {
+                                                                                                    "type":  "number",
+                                                                                                    "operation":  "lt"
+                                                                                                }
+                                                                               }
+                                                                           ],
+                                                            "combinator":  "and"
+                                                        },
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "type":  "n8n-nodes-base.if",
+                      "typeVersion":  2.3,
+                      "position":  [
+                                       -1104,
+                                       720
+                                   ],
+                      "id":  "1f769b16-f73e-4835-b769-6d44eae746e6",
+                      "name":  "If1"
+                  },
+                  {
+                      "parameters":  {
+                                         "promptType":  "define",
+                                         "text":  "=",
+                                         "messages":  {
+                                                          "messageValues":  [
+                                                                                {
+                                                                                    "type":  "AIMessagePromptTemplate",
+                                                                                    "message":  "Ты — безжалостный старший редактор маргинального паблика. Тебе на проверку пришел JSON-массив с черными анекдотами. Твоя единственная цель — довести этот материал до абсолютного идеала, чтобы читатель сошел со смеха или ужаса.\n\nТВОЙ АЛГОРИТМ ПРОВЕРКИ ДЛЯ КАЖДОГО АНЕКДОТА:\n1. Проверка на длину и детализацию: Если анекдот короткий, сухой или написан «для галочки» — ты ОБЯЗАН его расширить. Добавь туда грязной атмосферы, сочных описаний, уличных диалогов, мата и кинематографичности. Преврати куцый текст в живой рассказ.\n2. Проверка на юмор: Если шутка банальная или панчлайн слабый, перепиши финал. Сделай его более циничным, жестким, абсурдным или черным. \n3. Сохранение сути: Не меняй кардинально персонажей и тему шутки, но выкрути маргинальность, пошлость и пост-иронию на максимум.\n\nВЫХОДНЫЕ ДАННЫЕ:\nНа выходе ты должен выдать ТОЛЬКО валидный JSON-массив, содержащий те же 12 анекдотов, но прошедших твою жесткую редактуру, расширение и доработку. Текст внутри должен содержать символы \\\\n для красивого разделения длинного рассказа на абзацы.\n\nФормат вывода (строго JSON, без лишней болтовни от себя):\n[\n  {\n    \"text\": \"Отредактированный, максимально длинный, сочный и смешной текст анекдота\"\n  }\n]"
+                                                                                }
+                                                                            ]
+                                                      }
+                                     },
+                      "type":  "@n8n/n8n-nodes-langchain.chainLlm",
+                      "typeVersion":  1.5,
+                      "position":  [
+                                       -1008,
+                                       1024
+                                   ],
+                      "id":  "5adbd9b5-d132-43a0-b3c3-ad71d8c2323d",
+                      "name":  "Basic LLM Chain1"
+                  },
+                  {
+                      "parameters":  {
+                                         "model":  "anthropic/claude-sonnet-4.6",
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "type":  "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+                      "typeVersion":  1,
+                      "position":  [
+                                       -864,
+                                       1184
+                                   ],
+                      "id":  "ad418542-16d9-40fb-897b-67dc10b19a29",
+                      "name":  "OpenRouter Chat Model"
+                  }
+              ],
+    "connections":  {
+                        "Schedule Trigger":  {
+                                                 "main":  [
+                                                              [
+                                                                  {
+                                                                      "node":  "Code",
+                                                                      "type":  "main",
+                                                                      "index":  0
+                                                                  }
+                                                              ]
+                                                          ]
+                                             },
+                        "Code":  {
+                                     "main":  [
+                                                  [
+                                                      {
+                                                          "node":  "Get row(s) in sheet",
+                                                          "type":  "main",
+                                                          "index":  0
+                                                      }
+                                                  ]
+                                              ]
+                                 },
+                        "Get row(s) in sheet":  {
+                                                    "main":  [
+                                                                 [
+                                                                     {
+                                                                         "node":  "Count New Status",
+                                                                         "type":  "main",
+                                                                         "index":  0
+                                                                     }
+                                                                 ]
+                                                             ]
+                                                },
+                        "Count New Status":  {
+                                                 "main":  [
+                                                              [
+                                                                  {
+                                                                      "node":  "If1",
+                                                                      "type":  "main",
+                                                                      "index":  0
+                                                                  }
+                                                              ]
+                                                          ]
+                                             },
+                        "OpenRouter Chat Model1":  {
+                                                       "ai_languageModel":  [
+                                                                                [
+                                                                                    {
+                                                                                        "node":  "Basic LLM Chain",
+                                                                                        "type":  "ai_languageModel",
+                                                                                        "index":  0
+                                                                                    }
+                                                                                ]
+                                                                            ]
+                                                   },
+                        "If":  {
+                                   "main":  [
+                                                [
+                                                    {
+                                                        "node":  "Basic LLM Chain",
+                                                        "type":  "main",
+                                                        "index":  0
+                                                    }
+                                                ]
+                                            ]
+                               },
+                        "Basic LLM Chain":  {
+                                                "main":  [
+                                                             [
+                                                                 {
+                                                                     "node":  "Basic LLM Chain1",
+                                                                     "type":  "main",
+                                                                     "index":  0
+                                                                 }
+                                                             ]
+                                                         ]
+                                            },
+                        "Parse \u0026 Format Jokes":  {
+                                                          "main":  [
+                                                                       [
+                                                                           {
+                                                                               "node":  "Append or update row in sheet",
+                                                                               "type":  "main",
+                                                                               "index":  0
+                                                                           }
+                                                                       ]
+                                                                   ]
+                                                      },
+                        "If1":  {
+                                    "main":  [
+                                                 [
+                                                     {
+                                                         "node":  "Count New Status1",
+                                                         "type":  "main",
+                                                         "index":  0
+                                                     }
+                                                 ]
+                                             ]
+                                },
+                        "Count New Status1":  {
+                                                  "main":  [
+                                                               [
+                                                                   {
+                                                                       "node":  "If",
+                                                                       "type":  "main",
+                                                                       "index":  0
+                                                                   }
+                                                               ]
+                                                           ]
+                                              },
+                        "OpenRouter Chat Model":  {
+                                                      "ai_languageModel":  [
+                                                                               [
+                                                                                   {
+                                                                                       "node":  "Basic LLM Chain1",
+                                                                                       "type":  "ai_languageModel",
+                                                                                       "index":  0
+                                                                                   }
+                                                                               ]
+                                                                           ]
+                                                  },
+                        "Basic LLM Chain1":  {
+                                                 "main":  [
+                                                              [
+                                                                  {
+                                                                      "node":  "Parse \u0026 Format Jokes",
+                                                                      "type":  "main",
+                                                                      "index":  0
+                                                                  }
+                                                              ]
+                                                          ]
+                                             }
+                    },
+    "settings":  {
+                     "executionOrder":  "v1",
+                     "binaryMode":  "separate"
+                 },
+    "staticData":  {
+                       "node:Schedule Trigger":  {
+                                                     "recurrenceRules":  [
+
+                                                                         ]
+                                                 }
+                   },
+    "meta":  {
+                 "templateCredsSetupCompleted":  true
+             },
+    "pinData":  {
+
+                },
+    "versionId":  "cad275f3-eff7-4ee6-9966-d5e20a1ee22d",
+    "activeVersionId":  null,
+    "versionCounter":  210,
+    "triggerCount":  1,
+    "tags":  [
+
+             ],
+    "shared":  [
+                   {
+                       "updatedAt":  "2026-07-22T06:51:04.804Z",
+                       "createdAt":  "2026-07-22T06:51:04.804Z",
+                       "role":  "workflow:owner",
+                       "workflowId":  "SFN4xYk6lQ33Vr6o",
+                       "projectId":  "TAbhGdk0kvTh10TJ",
+                       "project":  {
+                                       "updatedAt":  "2026-07-21T16:51:14.212Z",
+                                       "createdAt":  "2026-07-21T16:45:02.267Z",
+                                       "id":  "TAbhGdk0kvTh10TJ",
+                                       "name":  "Alekseyorl779 Alekseyorl779 \u003calekseyorl779@gmail.com\u003e",
+                                       "type":  "personal",
+                                       "icon":  null,
+                                       "description":  null,
+                                       "creatorId":  "05c1e840-c40d-47b5-bfd2-a660e531eafd"
+                                   }
+                   }
+               ],
+    "versionMetadata":  {
+                            "name":  null,
+                            "description":  null
+                        }
+}
