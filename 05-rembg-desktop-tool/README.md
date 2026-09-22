@@ -2,6 +2,8 @@
 
 A local Windows utility for removing image backgrounds from product photos. It combines a batch CLI, a lightweight annotation tool, adaptive trimap generation, and an optional ONNX matting hook.
 
+The project also includes **RemBG Studio**, a desktop GUI for the v3 pipeline. It is designed for operators who prefer a visual workflow over terminal commands.
+
 ## What it does
 
 - Removes backgrounds from JPG, PNG, WEBP, BMP, and TIFF images.
@@ -35,6 +37,7 @@ flowchart LR
 | `remove_bg_v2.py` | Batch processing with alpha refinement |
 | `remove_bg_v3.py` | Quality-first pipeline with masks and trimaps |
 | `gui_annotator.py` | Manual FG/BG annotation and reprocessing helper |
+| `gui_frontend.py` | RemBG Studio desktop interface for selecting folders, processing images, viewing logs, and previewing output |
 | `check_onnx.py` | Runtime and CPU/GPU provider diagnostics |
 | `InspyrenetRembg.spec` | PyInstaller build configuration |
 
@@ -65,6 +68,21 @@ Run the annotation helper:
 python gui_annotator.py
 ```
 
+Run RemBG Studio:
+
+```powershell
+python gui_frontend.py
+```
+
+The interface provides:
+
+- input and output folder selection;
+- model selection;
+- max-side, erosion, and dilation controls;
+- background-removal progress log;
+- output-folder shortcut;
+- preview of the first processed image.
+
 ## Engineering notes
 
 - The segmentation model is downloaded and cached on first use by `rembg`.
@@ -79,6 +97,7 @@ python gui_annotator.py
 - Add automated regression fixtures for hair, transparent objects, and low-contrast edges.
 - Add a progress summary with processed, skipped, and failed counts.
 - Package a tested Windows executable with a pinned model cache.
+- Package `gui_frontend.py` as a Windows executable with PyInstaller for one-click use.
 
 ## License and model usage
 
