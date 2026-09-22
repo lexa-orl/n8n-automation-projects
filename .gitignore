@@ -14,3 +14,16 @@ private/
 .DS_Store
 Thumbs.db
 .vscode/
+
+# Python environments, caches, and generated image outputs
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+runenv/
+test_run/
+output/
+*_ready/
+*_v3_ready/
+*_annotations/
+.rembg/

@@ -1,0 +1,11 @@
+rembg[gpu]
+onnxruntime-gpu
+Pillow
+numpy
+opencv-python
+scipy
+scikit-image
+tqdm
+rembg[cpu]
+Pillow
+tqdm

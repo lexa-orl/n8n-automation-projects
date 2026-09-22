@@ -10,6 +10,7 @@ A collection of workflow automation projects built with n8n, REST APIs, Telegram
 | [Wildberries SEO Pipeline](./02-wildberries-seo-pipeline/) | Batch data processing, validation rules, Google Sheets updates, and status-driven operations |
 | [Smart GitHub Finder](./03-smart-github-finder/) | AI query generation, GitHub search, deduplication, scoring, ranking, and chat output |
 | [AI Content Factory](./04-ai-content-factory/) | Scheduled content generation, validation, approval flow, and Telegram publishing |
+| [RemBG Desktop Tool](./05-rembg-desktop-tool/) | Local image background removal with batch processing, masks, trimaps, and ONNX support |
 
 ## Technical focus
 
